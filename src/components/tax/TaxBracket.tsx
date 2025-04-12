@@ -3,7 +3,7 @@ import {Box, Card, CardContent, InputAdornment, Slider, TextField, Typography} f
 import MoneyField from '../inputs/MoneyField';
 import PopulationField from '../inputs/PopulationField';
 import {TaxBracketProps} from '../../types';
-import {formatPercentage} from '../../utils/formatters';
+import {formatPercentage} from '../../utils/formatters.ts';
 
 /**
  * Component for configuring a tax bracket

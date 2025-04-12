@@ -3,7 +3,7 @@ import {Box, Paper, Typography} from '@mui/material';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {TaxDistributionChartProps} from '../../types';
 import {calculateBracketTax} from '../../utils/calculations';
-import {formatMoney} from '../../utils/formatters';
+import {formatMoney} from '../../utils/formatters.ts';
 
 /**
  * Pie chart showing tax distribution by bracket

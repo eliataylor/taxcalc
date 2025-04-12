@@ -3,7 +3,7 @@ import {Box, Paper, Typography} from '@mui/material';
 import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {IncomeTaxComparisonChartProps} from '../../types';
 import {calculateBracketTax, calculateTotalIncome} from '../../utils/calculations';
-import {formatMoney, formatPercentage} from '../../utils/formatters';
+import {formatMoney, formatPercentage} from '../../utils/formatters.ts';
 
 /**
  * Stacked bar chart comparing income and tax burden by bracket

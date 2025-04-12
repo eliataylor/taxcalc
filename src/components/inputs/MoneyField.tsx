@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, Typography} from '@mui/material';
-import {formatMoney} from '../../utils/formatters';
 import {MoneyFieldProps} from '../../types';
+import {formatMoney} from "../../utils/formatters.ts";
 
 /**
  * Renders a monetary value with formatted dollar string

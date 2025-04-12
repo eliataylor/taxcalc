@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {Box, Paper, Typography} from '@mui/material';
 import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {PerCapitaTaxChartProps} from '../../types';
-import {formatMoney, formatPercentage} from '../../utils/formatters';
+import {formatMoney, formatPercentage} from '../../utils/formatters.ts';
 
 /**
  * Bar chart showing per capita tax burden by bracket
