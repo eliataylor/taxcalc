@@ -1,14 +1,14 @@
 import React, {useRef, useState} from 'react';
 import {
-  Alert,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Snackbar,
-  Typography
+    Alert,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Snackbar,
+    Typography
 } from '@mui/material';
 import {ImportScenarioProps, ScenarioData} from '../../types';
 
