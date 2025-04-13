@@ -4,6 +4,7 @@ import {v4 as uuidv4} from 'uuid';
 
 // Import components
 import PayingPopulation from './inputs/PayingPopulation';
+import payingPopulation from './inputs/PayingPopulation';
 import MoneySupply from './inputs/MoneySupply';
 import TaxBracket from './tax/TaxBracket';
 import ExportScenario from './tax/ExportScenario';
@@ -20,7 +21,6 @@ import {
 } from '../utils/calculations';
 import {formatPopulation} from "../utils/formatters.ts";
 import TaxDueOverNetWorth from "./charts/TaxDueOverNetWorth.tsx";
-import payingPopulation from "./inputs/PayingPopulation";
 
 // const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#A4DE6C']
 /**
@@ -32,174 +32,179 @@ const Calculator: React.FC = () => {
     const [moneySupply, setMoneySupply] = useState<number>(6_300_000_000_000); // Default to tax revenue
     const [brackets, setBrackets] = useState<TaxBracketData[]>([
         {
-            id: uuidv4(),
-            name: 'Not Holding',
-            population: (331_900_000 * .25),
-            popPercent: .25,
-            color: '#0088FE',
-            levyTypes: [
+            "id": "75ece48e-5aac-4da5-942f-0bf5c3e4c4dd",
+            "name": "Not Holding",
+            "population": 82975000,
+            "popPercent": 0.25,
+            "color": "#0088FE",
+            "levyTypes": [
                 {
-                    name: 'Checking Account Balance',
-                    dollars: 500,
-                    taxRate: .05
+                    "name": "Checking Account Balance",
+                    "dollars": 500,
+                    "taxRate": 0.05
                 },
                 {
-                    name: 'Savings Account Balance',
-                    dollars: 0,
-                    taxRate: 0.10
+                    "name": "Savings Account Balance",
+                    "dollars": 0,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Overseas Balance',
-                    dollars: 0,
-                    taxRate: 0.10
+                    "name": "Overseas Balance",
+                    "dollars": 0,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Occupied Property',
-                    dollars: 0,
-                    taxRate: 0.05
+                    "name": "Occupied Property",
+                    "dollars": 0,
+                    "taxRate": 0.05
                 },
                 {
-                    name: 'Vacant Property',
-                    dollars: 0,
-                    taxRate: 0.30
+                    "name": "Vacant Property",
+                    "dollars": 0,
+                    "taxRate": 0.3
                 }
-            ]
+            ],
+            "totalTax": 2074375000
         },
         {
-            id: uuidv4(),
-            name: 'Lower Holders',
-            population: (331_900_000 * .35),
-            popPercent: .35,
-            color: '#8884D8',
-            levyTypes: [
+            "id": "6eef75e3-3296-4930-8913-3ab2ad9e325b",
+            "name": "Lower Holders",
+            "population": 116165000,
+            "popPercent": 0.35,
+            "color": "#8884D8",
+            "levyTypes": [
                 {
-                    name: 'Checking Account Balance',
-                    dollars: 2000,
-                    taxRate: 0.07
+                    "name": "Checking Account Balance",
+                    "dollars": 2000,
+                    "taxRate": 0.07
                 },
                 {
-                    name: 'Savings Account Balance',
-                    dollars: 5000,
-                    taxRate: 0.07
+                    "name": "Savings Account Balance",
+                    "dollars": 5000,
+                    "taxRate": 0.07
                 },
                 {
-                    name: 'Overseas Balance',
-                    dollars: 0,
-                    taxRate: 0.10
+                    "name": "Overseas Balance",
+                    "dollars": 0,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Occupied Property',
-                    dollars: 0,
-                    taxRate: 0.05
+                    "name": "Occupied Property",
+                    "dollars": 0,
+                    "taxRate": 0.05
                 },
                 {
-                    name: 'Vacant Property',
-                    dollars: 0,
-                    taxRate: 0.30
+                    "name": "Vacant Property",
+                    "dollars": 0,
+                    "taxRate": 0.3
                 }
-            ]
+            ],
+            "totalTax": 56920850000.00001
         },
         {
-            id: uuidv4(),
-            name: 'Mid Holders',
-            population: (331_900_000 * .30),
-            popPercent: .30,
-            color: '#00C49F',
-            levyTypes: [
+            "id": "e09b9289-735f-40cf-a278-6133e3c6d308",
+            "name": "Mid Holders",
+            "population": 99570000,
+            "popPercent": 0.3,
+            "color": "#00C49F",
+            "levyTypes": [
                 {
-                    name: 'Checking Account Balance',
-                    dollars: 20000,
-                    taxRate: 0.07
+                    "name": "Checking Account Balance",
+                    "dollars": 20000,
+                    "taxRate": 0.07
                 },
                 {
-                    name: 'Savings Account Balance',
-                    dollars: 50000,
-                    taxRate: 0.07
+                    "name": "Savings Account Balance",
+                    "dollars": 50000,
+                    "taxRate": 0.07
                 },
                 {
-                    name: 'Overseas Balance',
-                    dollars: 5000,
-                    taxRate: 0.10
+                    "name": "Overseas Balance",
+                    "dollars": 5000,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Occupied Property',
-                    dollars: 200000,
-                    taxRate: 0.05
+                    "name": "Occupied Property",
+                    "dollars": 200000,
+                    "taxRate": 0.05
                 },
                 {
-                    name: 'Vacant Property',
-                    dollars: 0,
-                    taxRate: 0.30
+                    "name": "Vacant Property",
+                    "dollars": 0,
+                    "taxRate": 0.3
                 }
-            ]
+            ],
+            "totalTax": 1533378000000
         },
         {
-            id: uuidv4(),
-            name: 'High Holders',
-            population: (331_900_000 * (.10 - (800 / 331_900_000))),
-            popPercent: .10 - (800 / 331_900_000),
-            color: '#FFBB28',
-            levyTypes: [
+            "id": "32a6f43d-ed64-4c27-a479-26dc43e01ac9",
+            "name": "High Holders",
+            "population": 33189200.000000004,
+            "popPercent": 0.09999758963543237,
+            "color": "#FFBB28",
+            "levyTypes": [
                 {
-                    name: 'Checking Account Balance',
-                    dollars: 200000,
-                    taxRate: 0.10
+                    "name": "Checking Account Balance",
+                    "dollars": 200000,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Savings Account Balance',
-                    dollars: 5000,
-                    taxRate: 0.10
+                    "name": "Savings Account Balance",
+                    "dollars": 200000,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Overseas Balance',
-                    dollars: 20000,
-                    taxRate: 0.10
+                    "name": "Overseas Balance",
+                    "dollars": 20000,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Occupied Property',
-                    dollars: 500_000,
-                    taxRate: 0.05
+                    "name": "Occupied Property",
+                    "dollars": 500000,
+                    "taxRate": 0.05
                 },
                 {
-                    name: 'Vacant Property',
-                    dollars: 500_000,
-                    taxRate: 0.30
+                    "name": "Vacant Property",
+                    "dollars": 400000,
+                    "taxRate": 0.3
                 }
-            ]
+            ],
+            "totalTax": 6206380400000.001
         },
         {
-            id: uuidv4(),
-            name: 'Top 3%',
-            population: (331_900_000 * (800 / 331_900_000)),
-            popPercent: (800 / 331_900_000),
-            color: '#FF8042',
-            levyTypes: [
+            "id": "ed04e7d9-99fe-4a0b-aeb4-c22dd0b03347",
+            "name": "Top 3%",
+            "population": 800,
+            "popPercent": 0.0000024103645676408555,
+            "color": "#FF8042",
+            "levyTypes": [
                 {
-                    name: 'Checking Account Balance',
-                    dollars: 50_000_000,
-                    taxRate: 0.15
+                    "name": "Checking Account Balance",
+                    "dollars": 50000000,
+                    "taxRate": 0.15
                 },
                 {
-                    name: 'Savings Account Balance',
-                    dollars: 1_000_000_000,
-                    taxRate: 0.15
+                    "name": "Savings Account Balance",
+                    "dollars": 1000000000,
+                    "taxRate": 0.15
                 },
                 {
-                    name: 'Overseas Balance',
-                    dollars: 100_000_000,
-                    taxRate: 0.10
+                    "name": "Overseas Balance",
+                    "dollars": 100000000,
+                    "taxRate": 0.1
                 },
                 {
-                    name: 'Occupied Property',
-                    dollars: 100_000_000,
-                    taxRate: 0.05
+                    "name": "Occupied Property",
+                    "dollars": 100000000,
+                    "taxRate": 0.05
                 },
                 {
-                    name: 'Vacant Property',
-                    dollars: 10_000_000,
-                    taxRate: 0.30
+                    "name": "Vacant Property",
+                    "dollars": 10000000,
+                    "taxRate": 0.3
                 }
-            ]
+            ],
+            "totalTax": 140400000000
         }
     ]);
 
@@ -315,7 +320,7 @@ const Calculator: React.FC = () => {
 
             <Grid container spacing={1}>
                 {/* 2Left column - Global settings */}
-                <Grid size={{xs: 12, md: 4}} style={{position:'relative'}}>
+                <Grid size={{xs: 12, md: 4}} style={{position: 'relative'}}>
                     <Paper sx={{p: 1, pt: 2, height: '100%'}}>
                         <Box sx={{mb: 3}}>
                             <PayingPopulation
@@ -337,13 +342,17 @@ const Calculator: React.FC = () => {
 
                         <Box sx={{mb: 2}}>
                             <Typography variant="subtitle2">Total Tax Revenue:</Typography>
-                            <Typography color={totalTaxRevenue > moneySupply ? 'green' : 'red'}>${formatPopulation(totalTaxRevenue)} ({taxBalancePercentage.toFixed(2)}% of
+                            <Typography
+                                color={totalTaxRevenue > moneySupply ? 'green' : 'red'}>${formatPopulation(totalTaxRevenue)} ({taxBalancePercentage.toFixed(2)}%
+                                of
                                 money supply)</Typography>
                         </Box>
 
                         <Box sx={{pt: 3}}>
-                            <TotalTaxRevenueByBracket payingPopulation={payingPopulation} moneySupply={moneySupply} brackets={brackets} />
-                            <TaxDueOverNetWorth payingPopulation={payingPopulation} moneySupply={moneySupply} brackets={brackets} />
+                            <TotalTaxRevenueByBracket payingPopulation={payingPopulation} moneySupply={moneySupply}
+                                                      brackets={brackets}/>
+                            <TaxDueOverNetWorth payingPopulation={payingPopulation} moneySupply={moneySupply}
+                                                brackets={brackets}/>
                         </Box>
 
                     </Paper>
