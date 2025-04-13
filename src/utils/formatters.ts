@@ -39,17 +39,19 @@ export const formatMoney = (
  */
 export const formatPopulation = (
     value: number,
-    includeRaw: boolean = true
+    includeRaw: boolean = false
 ): string => {
     const formatted = value.toLocaleString();
 
     let humanReadable = '';
-    if (value >= 1_000_000_000) {
+    if (value >= 1_000_000_000_000) {
+        humanReadable = `${(value / 1_000_000_000_000).toFixed(2)} trillion`;
+    } else if (value >= 1_000_000_000) {
         humanReadable = `${(value / 1_000_000_000).toFixed(2)} billion`;
     } else if (value >= 1_000_000) {
         humanReadable = `${(value / 1_000_000).toFixed(2)} million`;
     } else if (value >= 1_000) {
-        humanReadable = `${(value / 1_000).toFixed(2)} thousand`;
+        humanReadable = `${formatNumber(value)}`;
     }
 
     if (humanReadable && includeRaw) {

@@ -4,6 +4,7 @@ import {TaxBracketData} from '../types';
  * Utility functions for tax calculations used throughout the application
  */
 
+
 /**
  * Calculates the total tax revenue from all tax brackets
  * @param brackets - Array of tax bracket data
@@ -11,8 +12,11 @@ import {TaxBracketData} from '../types';
  */
 export const calculateTotalTax = (brackets: TaxBracketData[]): number => {
     return brackets.reduce((total, bracket) => {
-        const bracketTax = bracket.population * bracket.incomeThreshold * bracket.taxRate;
-        return total + bracketTax;
+        if (bracket.totalTax) {
+            return total + bracket.totalTax;
+        } else {
+            return calculateBracketTax(bracket) + total;
+        }
     }, 0);
 };
 
@@ -53,22 +57,32 @@ export const calculatePopulationBalance = (
 };
 
 /**
- * Calculates the effective tax rate for a bracket
+ * Calculates the total holdings for a bracket (WARN: probably not a misleading figure)
  * @param bracket - Tax bracket data
- * @returns Effective tax rate
+ * @returns Total Holdings
  */
-export const calculateEffectiveTaxRate = (bracket: TaxBracketData): number => {
-    return bracket.taxRate;
+export const calculateTotalHoldings = (bracket: TaxBracketData): number => {
+    let sum = 0;
+    bracket.levyTypes.forEach(levyType => {
+        sum += levyType.taxRate * levyType.dollars
+    })
+    return sum
 };
 
+
 /**
- * Calculates the total income for a bracket
- * @param bracket - Tax bracket data
- * @returns Total income
+ * Calculates the total tax revenue from all tax brackets
+ * @param brackets - Array of tax bracket data
+ * @returns Total tax revenue
  */
-export const calculateTotalIncome = (bracket: TaxBracketData): number => {
-    return bracket.population * bracket.incomeThreshold;
+export const calculateNetWorth = (bracket: TaxBracketData): number => {
+    let sum = 0;
+    bracket.levyTypes.forEach(levyType => {
+        sum += levyType.dollars
+    })
+    return sum * bracket.population;
 };
+
 
 /**
  * Calculates the total tax for a bracket
@@ -76,7 +90,11 @@ export const calculateTotalIncome = (bracket: TaxBracketData): number => {
  * @returns Total tax
  */
 export const calculateBracketTax = (bracket: TaxBracketData): number => {
-    return bracket.population * bracket.incomeThreshold * bracket.taxRate;
+    let sum = 0;
+    bracket.levyTypes.forEach(levyType => {
+        sum += levyType.taxRate * levyType.dollars
+    })
+    return sum * bracket.population;
 };
 
 /**

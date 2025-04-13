@@ -1,29 +1,29 @@
 import React, {useMemo} from 'react';
 import {Box, Paper, Typography} from '@mui/material';
 import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import {IncomeTaxComparisonChartProps} from '../../types';
-import {calculateBracketTax, calculateTotalIncome} from '../../utils/calculations';
+import {HoldingsTaxComparisonChartProps} from '../../types';
+import {calculateBracketTax, calculateTotalHoldings} from '../../utils/calculations';
 import {formatMoney, formatPercentage} from '../../utils/formatters.ts';
 
 /**
- * Stacked bar chart comparing income and tax burden by bracket
+ * Stacked bar chart comparing Holdings and tax burden by bracket
  */
-const IncomeTaxComparisonChart: React.FC<IncomeTaxComparisonChartProps> = ({brackets}) => {
+const HoldingsTaxComparisonChart: React.FC<HoldingsTaxComparisonChartProps> = ({brackets}) => {
     const data = useMemo(() => {
         return brackets.map(bracket => {
-            const totalIncome = calculateTotalIncome(bracket);
+            const totalHoldings = calculateTotalHoldings(bracket);
             const totalTax = calculateBracketTax(bracket);
-            const afterTaxIncome = totalIncome - totalTax;
+            const afterTaxHoldings = totalHoldings - totalTax;
 
             return {
                 name: bracket.name,
-                totalIncome,
+                totalHoldings,
                 totalTax,
-                afterTaxIncome,
+                afterTaxHoldings,
                 // For tooltip display
-                formattedIncome: formatMoney(totalIncome, {notation: 'compact'}),
+                formattedHoldings: formatMoney(totalHoldings, {notation: 'compact'}),
                 formattedTax: formatMoney(totalTax, {notation: 'compact'}),
-                formattedAfterTax: formatMoney(afterTaxIncome, {notation: 'compact'})
+                formattedAfterTax: formatMoney(afterTaxHoldings, {notation: 'compact'})
             };
         });
     }, [brackets]);
@@ -31,19 +31,19 @@ const IncomeTaxComparisonChart: React.FC<IncomeTaxComparisonChartProps> = ({brac
     const CustomTooltip = ({active, payload, label}: any) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
-            const effectiveRate = data.totalTax / data.totalIncome;
+            const effectiveRate = data.totalTax / data.totalHoldings;
 
             return (
                 <Paper sx={{bgcolor: 'background.paper', p: 2, boxShadow: 3}}>
                     <Typography variant="body2" fontWeight="bold">{label}</Typography>
                     <Typography variant="body2">
-                        Total Income: {data.formattedIncome}
+                        Total Holdings: {data.formattedHoldings}
                     </Typography>
                     <Typography variant="body2" color="error.main">
                         Tax Burden: {data.formattedTax}
                     </Typography>
                     <Typography variant="body2" color="success.main">
-                        After-Tax Income: {data.formattedAfterTax}
+                        After-Tax Holdings: {data.formattedAfterTax}
                     </Typography>
                     <Typography variant="body2">
                         Effective Rate: {formatPercentage(effectiveRate)}
@@ -65,7 +65,7 @@ const IncomeTaxComparisonChart: React.FC<IncomeTaxComparisonChartProps> = ({brac
     return (
         <Box sx={{width: '100%', height: 400}}>
             <Typography variant="h6" align="center" gutterBottom>
-                Income vs. Tax Burden by Bracket
+                Holdings vs. Tax Burden by Bracket
             </Typography>
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -89,7 +89,7 @@ const IncomeTaxComparisonChart: React.FC<IncomeTaxComparisonChartProps> = ({brac
                     />
                     <Tooltip content={<CustomTooltip/>}/>
                     <Legend/>
-                    <Bar dataKey="afterTaxIncome" stackId="a" fill="#4caf50" name="After-Tax Income"/>
+                    <Bar dataKey="afterTaxHoldings" stackId="a" fill="#4caf50" name="After-Tax Holdings"/>
                     <Bar dataKey="totalTax" stackId="a" fill="#f44336" name="Tax Amount"/>
                 </BarChart>
             </ResponsiveContainer>
@@ -97,4 +97,4 @@ const IncomeTaxComparisonChart: React.FC<IncomeTaxComparisonChartProps> = ({brac
     );
 };
 
-export default IncomeTaxComparisonChart;
+export default HoldingsTaxComparisonChart;

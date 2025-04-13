@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Typography} from '@mui/material';
+import {Typography} from '@mui/material';
 import {PopulationFieldProps} from '../../types';
 
 /**
@@ -20,12 +20,9 @@ const PopulationField: React.FC<PopulationFieldProps> = ({val}) => {
     }
 
     return (
-        <Box>
             <Typography variant="body1">
-                <strong>Population:</strong> {formattedPopulation}
-                {humanReadable && <span> ({humanReadable})</span>}
+                {formattedPopulation} {humanReadable && <span> ({humanReadable})</span>}
             </Typography>
-        </Box>
     );
 };
 

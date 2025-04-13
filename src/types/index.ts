@@ -2,16 +2,23 @@
  * Type definitions for the Tax Calculator application
  */
 
+export interface LevyTypes {
+    name:string;
+    dollars:number;
+    taxRate:number
+}
+
 /**
  * Represents a tax bracket with its properties
  */
 export interface TaxBracketData {
     id: string;
     name: string;
+    color: string;
     population: number;
-    incomeThreshold: number;
-    taxRate: number;
-    totalTax: number;
+    popPercent: number;
+    levyTypes: LevyTypes[];
+    totalTax?: number;
 }
 
 /**
@@ -77,6 +84,8 @@ export interface TaxBracketProps {
  */
 export interface TaxDistributionChartProps {
     brackets: TaxBracketData[];
+    moneySupply: number;
+    payingPopulation: number;
 }
 
 /**
@@ -87,9 +96,9 @@ export interface PerCapitaTaxChartProps {
 }
 
 /**
- * Props for the IncomeTaxComparisonChart component
+ * Props for the HoldingsTaxComparisonChart component
  */
-export interface IncomeTaxComparisonChartProps {
+export interface HoldingsTaxComparisonChartProps {
     brackets: TaxBracketData[];
 }
 

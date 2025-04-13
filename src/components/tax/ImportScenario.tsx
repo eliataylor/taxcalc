@@ -94,7 +94,7 @@ const ImportScenario: React.FC<ImportScenarioProps> = ({onImport}) => {
 
     return (
         <>
-            <Button variant="outlined" onClick={handleOpen} sx={{ml: 2}}>
+            <Button variant="outlined" onClick={handleOpen} size={'small'}>
                 Import Scenario
             </Button>
 

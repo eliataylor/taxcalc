@@ -1,82 +1,205 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Box, Button, Container, Divider, Grid, Paper, Tab, Tabs, Typography} from '@mui/material';
+import {Alert, Box, Button, Divider, Grid, Paper, Typography} from '@mui/material';
 import {v4 as uuidv4} from 'uuid';
 
 // Import components
 import PayingPopulation from './inputs/PayingPopulation';
 import MoneySupply from './inputs/MoneySupply';
 import TaxBracket from './tax/TaxBracket';
-import MoneyField from './inputs/MoneyField';
 import ExportScenario from './tax/ExportScenario';
 import ImportScenario from './tax/ImportScenario';
-import TaxDistributionChart from './charts/TaxDistributionChart';
-import PerCapitaTaxChart from './charts/PerCapitaTaxChart';
-import IncomeTaxComparisonChart from './charts/IncomeTaxComparisonChart';
+import TotalTaxRevenueByBracket from './charts/TotalTaxRevenueByBracket.tsx';
 
 // Import types and utilities
-import {ImportData, TabPanelProps, TaxBracketData} from '../types';
+import {ImportData, TaxBracketData} from '../types';
 import {
     calculatePopulationBalance,
     calculateTaxPercentage,
     calculateTotalTax,
     updateBracketTaxes
 } from '../utils/calculations';
+import {formatPopulation} from "../utils/formatters.ts";
+import TaxDueOverNetWorth from "./charts/TaxDueOverNetWorth.tsx";
+import payingPopulation from "./inputs/PayingPopulation";
 
-/**
- * TabPanel component for visualization tabs
- */
-function TabPanel(props: TabPanelProps) {
-    const {children, value, index, ...other} = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`tax-tabpanel-${index}`}
-            aria-labelledby={`tax-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box sx={{pt: 3}}>
-                    {children}
-                </Box>
-            )}
-        </div>
-    );
-}
-
+// const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#A4DE6C']
 /**
  * Main calculator component that manages state and coordinates other components
  */
 const Calculator: React.FC = () => {
     // State for the calculator
-    const [population, setPopulation] = useState<number>(144_500_000); // Default to taxpayers
-    const [moneySupply, setMoneySupply] = useState<number>(4_800_000_000_000); // Default to tax revenue
-    const [tabValue, setTabValue] = useState(0);
+    const [population, setPopulation] = useState<number>(331_900_000); // Default to taxpayers
+    const [moneySupply, setMoneySupply] = useState<number>(6_300_000_000_000); // Default to tax revenue
     const [brackets, setBrackets] = useState<TaxBracketData[]>([
         {
             id: uuidv4(),
-            name: 'Lower Income',
-            population: 72_000_000,
-            incomeThreshold: 30_000,
-            taxRate: 0.10,
-            totalTax: 0
+            name: 'Not Holding',
+            population: (331_900_000 * .25),
+            popPercent: .25,
+            color: '#0088FE',
+            levyTypes: [
+                {
+                    name: 'Checking Account Balance',
+                    dollars: 500,
+                    taxRate: .05
+                },
+                {
+                    name: 'Savings Account Balance',
+                    dollars: 0,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Overseas Balance',
+                    dollars: 0,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Occupied Property',
+                    dollars: 0,
+                    taxRate: 0.05
+                },
+                {
+                    name: 'Vacant Property',
+                    dollars: 0,
+                    taxRate: 0.30
+                }
+            ]
         },
         {
             id: uuidv4(),
-            name: 'Middle Income',
-            population: 60_000_000,
-            incomeThreshold: 75_000,
-            taxRate: 0.22,
-            totalTax: 0
+            name: 'Lower Holders',
+            population: (331_900_000 * .35),
+            popPercent: .35,
+            color: '#8884D8',
+            levyTypes: [
+                {
+                    name: 'Checking Account Balance',
+                    dollars: 2000,
+                    taxRate: 0.07
+                },
+                {
+                    name: 'Savings Account Balance',
+                    dollars: 5000,
+                    taxRate: 0.07
+                },
+                {
+                    name: 'Overseas Balance',
+                    dollars: 0,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Occupied Property',
+                    dollars: 0,
+                    taxRate: 0.05
+                },
+                {
+                    name: 'Vacant Property',
+                    dollars: 0,
+                    taxRate: 0.30
+                }
+            ]
         },
         {
             id: uuidv4(),
-            name: 'Upper Income',
-            population: 12_500_000,
-            incomeThreshold: 200_000,
-            taxRate: 0.35,
-            totalTax: 0
+            name: 'Mid Holders',
+            population: (331_900_000 * .30),
+            popPercent: .30,
+            color: '#00C49F',
+            levyTypes: [
+                {
+                    name: 'Checking Account Balance',
+                    dollars: 20000,
+                    taxRate: 0.07
+                },
+                {
+                    name: 'Savings Account Balance',
+                    dollars: 50000,
+                    taxRate: 0.07
+                },
+                {
+                    name: 'Overseas Balance',
+                    dollars: 5000,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Occupied Property',
+                    dollars: 200000,
+                    taxRate: 0.05
+                },
+                {
+                    name: 'Vacant Property',
+                    dollars: 0,
+                    taxRate: 0.30
+                }
+            ]
+        },
+        {
+            id: uuidv4(),
+            name: 'High Holders',
+            population: (331_900_000 * (.10 - (800 / 331_900_000))),
+            popPercent: .10 - (800 / 331_900_000),
+            color: '#FFBB28',
+            levyTypes: [
+                {
+                    name: 'Checking Account Balance',
+                    dollars: 200000,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Savings Account Balance',
+                    dollars: 5000,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Overseas Balance',
+                    dollars: 20000,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Occupied Property',
+                    dollars: 500_000,
+                    taxRate: 0.05
+                },
+                {
+                    name: 'Vacant Property',
+                    dollars: 500_000,
+                    taxRate: 0.30
+                }
+            ]
+        },
+        {
+            id: uuidv4(),
+            name: 'Top 3%',
+            population: (331_900_000 * (800 / 331_900_000)),
+            popPercent: (800 / 331_900_000),
+            color: '#FF8042',
+            levyTypes: [
+                {
+                    name: 'Checking Account Balance',
+                    dollars: 50_000_000,
+                    taxRate: 0.15
+                },
+                {
+                    name: 'Savings Account Balance',
+                    dollars: 1_000_000_000,
+                    taxRate: 0.15
+                },
+                {
+                    name: 'Overseas Balance',
+                    dollars: 100_000_000,
+                    taxRate: 0.10
+                },
+                {
+                    name: 'Occupied Property',
+                    dollars: 100_000_000,
+                    taxRate: 0.05
+                },
+                {
+                    name: 'Vacant Property',
+                    dollars: 10_000_000,
+                    taxRate: 0.30
+                }
+            ]
         }
     ]);
 
@@ -114,9 +237,33 @@ const Calculator: React.FC = () => {
             id: uuidv4(),
             name: `Bracket ${brackets.length + 1}`,
             population: 0,
-            incomeThreshold: 50_000,
-            taxRate: 0.15,
-            totalTax: 0
+            levyTypes: [
+                {
+                    name: 'Checking Account Balance',
+                    dollars: 0,
+                    taxRate: 0
+                },
+                {
+                    name: 'Savings Account Balance',
+                    dollars: 0,
+                    taxRate: 0
+                },
+                {
+                    name: 'Overseas Balance',
+                    dollars: 2000,
+                    taxRate: 0
+                },
+                {
+                    name: 'Occupied Property',
+                    dollars: 0,
+                    taxRate: 0
+                },
+                {
+                    name: 'Vacant Property',
+                    dollars: 0,
+                    taxRate: 0
+                },
+            ],
         };
 
         setBrackets([...brackets, newBracket]);
@@ -124,10 +271,6 @@ const Calculator: React.FC = () => {
 
     const removeBracket = (id: string) => {
         setBrackets(brackets.filter(bracket => bracket.id !== id));
-    };
-
-    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-        setTabValue(newValue);
     };
 
     const handleImport = (data: ImportData) => {
@@ -144,15 +287,36 @@ const Calculator: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="lg" sx={{py: 4}}>
-            <Typography variant="h4" gutterBottom>
-                Tax Scenario Calculator
-            </Typography>
+        <Box width={'100%'}>
+            <Grid container p={1} justifyContent={'space-between'}>
+                <Grid>
+                    <Typography variant="h4" component={'h1'}>
+                        New Era Tax Calculator
+                    </Typography>
+                    <Typography variant="subtitle1">
+                        <a href={"https://docs.google.com/document/d/1qCxG9i8CHDaBKULj7ITyCVCcWngkd6edAwGGiV1Z2Zo/edit?usp=sharing"}
+                           target={"_blank"}>Research and Data Sources</a>
+                    </Typography>
+                </Grid>
 
-            <Grid container spacing={3}>
+                <Grid spacing={1} gap={2}>
+                    <ExportScenario
+                        population={population}
+                        moneySupply={moneySupply}
+                        brackets={brackets}
+                        totalTaxRevenue={totalTaxRevenue}
+                        taxBalancePercentage={taxBalancePercentage}
+                    />
+
+                    <ImportScenario onImport={handleImport}/>
+                </Grid>
+            </Grid>
+
+
+            <Grid container spacing={1}>
                 {/* 2Left column - Global settings */}
-                <Grid size={{xs: 12, md: 4}}>
-                    <Paper sx={{p: 3, height: '100%'}}>
+                <Grid size={{xs: 12, md: 4}} style={{position:'relative'}}>
+                    <Paper sx={{p: 1, pt: 2, height: '100%'}}>
                         <Box sx={{mb: 3}}>
                             <PayingPopulation
                                 val={population}
@@ -168,12 +332,26 @@ const Calculator: React.FC = () => {
                                 onValueChange={setMoneySupply}
                             />
                         </Box>
+
+                        <Divider sx={{my: 3}}/>
+
+                        <Box sx={{mb: 2}}>
+                            <Typography variant="subtitle2">Total Tax Revenue:</Typography>
+                            <Typography color={totalTaxRevenue > moneySupply ? 'green' : 'red'}>${formatPopulation(totalTaxRevenue)} ({taxBalancePercentage.toFixed(2)}% of
+                                money supply)</Typography>
+                        </Box>
+
+                        <Box sx={{pt: 3}}>
+                            <TotalTaxRevenueByBracket payingPopulation={payingPopulation} moneySupply={moneySupply} brackets={brackets} />
+                            <TaxDueOverNetWorth payingPopulation={payingPopulation} moneySupply={moneySupply} brackets={brackets} />
+                        </Box>
+
                     </Paper>
                 </Grid>
 
                 {/* Right column - Tax brackets and results */}
                 <Grid size={{xs: 12, md: 8}}>
-                    <Paper sx={{p: 3, mb: 3}}>
+                    <Paper sx={{p: 1, mb: 3}}>
                         <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
                             <Typography variant="h5">Tax Brackets</Typography>
                             <Button
@@ -215,76 +393,9 @@ const Calculator: React.FC = () => {
                             </Box>
                         ))}
                     </Paper>
-
-                    <Paper sx={{p: 3}}>
-                        <Typography variant="h5" gutterBottom>
-                            Tax Scenario Results
-                        </Typography>
-
-                        <Box sx={{mb: 2}}>
-                            <Typography variant="subtitle1">Total Tax Revenue:</Typography>
-                            <MoneyField val={totalTaxRevenue}/>
-                        </Box>
-
-                        <Box sx={{mb: 2}}>
-                            <Typography variant="subtitle1">
-                                Percentage of Money Supply Covered: {taxBalancePercentage.toFixed(2)}%
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{mb: 2}}>
-                            <Typography variant="subtitle1">Per Capita Tax Burden:</Typography>
-                            <MoneyField
-                                val={population > 0 ? totalTaxRevenue / population : 0}
-                            />
-                        </Box>
-
-                        <Box sx={{display: 'flex'}}>
-                            <ExportScenario
-                                population={population}
-                                moneySupply={moneySupply}
-                                brackets={brackets}
-                                totalTaxRevenue={totalTaxRevenue}
-                                taxBalancePercentage={taxBalancePercentage}
-                            />
-
-                            <ImportScenario onImport={handleImport}/>
-                        </Box>
-                    </Paper>
-
-                    {/* Visualizations */}
-                    <Paper sx={{p: 3, mt: 3}}>
-                        <Typography variant="h5" gutterBottom>
-                            Visualizations
-                        </Typography>
-
-                        <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
-                            <Tabs
-                                value={tabValue}
-                                onChange={handleTabChange}
-                                aria-label="tax visualization tabs"
-                            >
-                                <Tab label="Tax Distribution"/>
-                                <Tab label="Per Capita Tax"/>
-                                <Tab label="Income vs. Tax"/>
-                            </Tabs>
-                        </Box>
-
-                        <TabPanel value={tabValue} index={0}>
-                            <TaxDistributionChart brackets={brackets}/>
-                        </TabPanel>
-
-                        <TabPanel value={tabValue} index={1}>
-                            <PerCapitaTaxChart brackets={brackets}/>
-                        </TabPanel>
-
-                        <TabPanel value={tabValue} index={2}>
-                            <IncomeTaxComparisonChart brackets={brackets}/>
-                        </TabPanel>
-                    </Paper>
                 </Grid>
             </Grid>
-        </Container>
+        </Box>
     );
 };
 

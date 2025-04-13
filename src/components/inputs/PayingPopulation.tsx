@@ -1,7 +1,7 @@
 import React from 'react';
-import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from '@mui/material';
-import PopulationField from './PopulationField';
+import {MenuItem, TextField, Typography} from '@mui/material';
 import {CensusFigure, PayingPopulationProps} from '../../types';
+import {formatPopulation} from "../../utils/formatters.ts";
 
 // Sample census figures (you would likely get these from an API or database)
 const CENSUS_FIGURES: CensusFigure[] = [
@@ -9,7 +9,7 @@ const CENSUS_FIGURES: CensusFigure[] = [
     {id: 'adult', name: 'Adult Population (18+)', value: 258_300_000},
     {id: 'workforce', name: 'Workforce', value: 164_000_000},
     {id: 'taxpayers', name: 'Taxpayers', value: 144_500_000},
-    {id: 'high_income', name: 'High Income Earners', value: 11_200_000},
+    {id: 'high_holders', name: 'High Holders', value: 11_200_000},
 ];
 
 /**
@@ -20,8 +20,8 @@ const PayingPopulation: React.FC<PayingPopulationProps> = ({val, onValueChange})
     const selectedFigure = CENSUS_FIGURES.find(fig => fig.value === val) ||
         {id: 'custom', name: 'Custom', value: val};
 
-    const handleChange = (event: SelectChangeEvent<string>) => {
-        const selectedId = event.target.value;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedId = e.target.value;
         const figure = CENSUS_FIGURES.find(fig => fig.id === selectedId);
         if (figure && onValueChange) {
             onValueChange(figure.value);
@@ -29,28 +29,23 @@ const PayingPopulation: React.FC<PayingPopulationProps> = ({val, onValueChange})
     };
 
     return (
-        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-            <Typography variant="h6">Paying Population</Typography>
-
-            <FormControl fullWidth>
-                <InputLabel id="census-select-label">Census Category</InputLabel>
-                <Select
-                    labelId="census-select-label"
-                    id="census-select"
-                    value={selectedFigure.id}
-                    label="Census Category"
-                    onChange={handleChange}
-                >
-                    {CENSUS_FIGURES.map(figure => (
-                        <MenuItem key={figure.id} value={figure.id}>
-                            {figure.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-
-            <PopulationField val={val}/>
-        </Box>
+        <TextField
+            label="Paying Population"
+            select={true}
+            id="paying-population"
+            value={selectedFigure.id}
+            onChange={handleChange}
+            fullWidth
+            helperText={<Typography variant="body2" color="text.secondary">
+                {formatPopulation(selectedFigure.value)}
+            </Typography>}
+        >
+            {CENSUS_FIGURES.map(figure => (
+                <MenuItem key={figure.id} value={figure.id}>
+                    {figure.name} ({formatPopulation(figure.value)})
+                </MenuItem>
+            ))}
+        </TextField>
     );
 };
 

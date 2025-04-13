@@ -10,7 +10,7 @@ import {formatMoney, formatPercentage} from '../../utils/formatters.ts';
 const PerCapitaTaxChart: React.FC<PerCapitaTaxChartProps> = ({brackets}) => {
     const data = useMemo(() => {
         return brackets.map(bracket => {
-            const perCapitaTax = bracket.incomeThreshold * bracket.taxRate;
+            const perCapitaTax = bracket.totalHoldings * bracket.taxRate;
             return {
                 name: bracket.name,
                 perCapitaTax,
@@ -34,7 +34,7 @@ const PerCapitaTaxChart: React.FC<PerCapitaTaxChartProps> = ({brackets}) => {
                         Tax Rate: {formatPercentage(taxRate)}
                     </Typography>
                     <Typography variant="body2">
-                        Income Threshold: {formatMoney(bracket?.incomeThreshold || 0)}
+                        Holdings Threshold: {formatMoney(bracket?.totalHoldings || 0)}
                     </Typography>
                 </Paper>
             );

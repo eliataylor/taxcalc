@@ -72,7 +72,7 @@ const ExportScenario: React.FC<ExportScenarioProps> = ({
 
     return (
         <>
-            <Button variant="outlined" onClick={handleOpen} sx={{mt: 2}}>
+            <Button variant="outlined" onClick={handleOpen} size={'small'}>
                 Export Scenario
             </Button>
 
