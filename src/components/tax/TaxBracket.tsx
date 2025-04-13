@@ -5,7 +5,7 @@ import {TaxBracketProps} from '../../types';
 import {HtmlTooltip} from "../research/Tooltip.tsx";
 import {formatMoney, formatPercentage, formatPopulation} from '../../utils/formatters.ts';
 import {lighten} from '@mui/material/styles'
-import { calculateBracketTax, calculateNetWorth} from "../../utils/calculations.ts";
+import {calculateBracketTax, calculateNetWorth} from "../../utils/calculations.ts";
 
 /**
  * Component for configuring a tax bracket
@@ -121,10 +121,12 @@ const TaxBracket: React.FC<TaxBracketProps> = ({
                     </Grid>
 
                     <Typography variant={'subtitle2'} align={'center'} pl={1} color={bracket.color}>Net Worth:
-                        ${formatPopulation(calculateNetWorth(bracket))} / ${formatPopulation(calculateNetWorth(bracket) / bracket.population)} per
+                        ${formatPopulation(calculateNetWorth(bracket))} /
+                        ${formatPopulation(calculateNetWorth(bracket) / bracket.population)} per
                         person</Typography>
                     <Typography variant={'subtitle2'} align={'center'} pl={1} color={bracket.color}>Taxes Due:
-                        ${formatPopulation(calculateBracketTax(bracket))} / ${formatPopulation(calculateBracketTax(bracket) / bracket.population)} per
+                        ${formatPopulation(calculateBracketTax(bracket))} /
+                        ${formatPopulation(calculateBracketTax(bracket) / bracket.population)} per
                         person</Typography>
                 </Box>
             </CardContent>

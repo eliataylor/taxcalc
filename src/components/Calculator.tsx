@@ -4,7 +4,6 @@ import {v4 as uuidv4} from 'uuid';
 
 // Import components
 import PayingPopulation from './inputs/PayingPopulation';
-import payingPopulation from './inputs/PayingPopulation';
 import MoneySupply from './inputs/MoneySupply';
 import TaxBracket from './tax/TaxBracket';
 import ExportScenario from './tax/ExportScenario';
@@ -239,8 +238,10 @@ const Calculator: React.FC = () => {
 
     const addNewBracket = () => {
         const newBracket: TaxBracketData = {
+            color: "#FF8042",
             id: uuidv4(),
             name: `Bracket ${brackets.length + 1}`,
+            popPercent: 0,
             population: 0,
             levyTypes: [
                 {
@@ -268,7 +269,7 @@ const Calculator: React.FC = () => {
                     dollars: 0,
                     taxRate: 0
                 },
-            ],
+            ]
         };
 
         setBrackets([...brackets, newBracket]);
@@ -349,9 +350,9 @@ const Calculator: React.FC = () => {
                         </Box>
 
                         <Box sx={{pt: 3}}>
-                            <TotalTaxRevenueByBracket payingPopulation={payingPopulation} moneySupply={moneySupply}
+                            <TotalTaxRevenueByBracket moneySupply={moneySupply}
                                                       brackets={brackets}/>
-                            <TaxDueOverNetWorth payingPopulation={payingPopulation} moneySupply={moneySupply}
+                            <TaxDueOverNetWorth moneySupply={moneySupply}
                                                 brackets={brackets}/>
                         </Box>
 

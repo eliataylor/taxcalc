@@ -3,9 +3,9 @@
  */
 
 export interface LevyTypes {
-    name:string;
-    dollars:number;
-    taxRate:number
+    name: string;
+    dollars: number;
+    taxRate: number
 }
 
 /**
@@ -85,7 +85,6 @@ export interface TaxBracketProps {
 export interface TaxDistributionChartProps {
     brackets: TaxBracketData[];
     moneySupply: number;
-    payingPopulation: number;
 }
 
 /**

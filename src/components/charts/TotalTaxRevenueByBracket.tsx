@@ -57,7 +57,7 @@ const TotalTaxRevenueByBracket: React.FC<TaxDistributionChartProps> = ({brackets
 
     // Custom label that shows percentage on pie slices
     const renderCustomizedLabel = (props: any) => {
-        const {cx, cy, midAngle, innerRadius, outerRadius, percent, index, payload} = props;
+        const {cx, cy, midAngle, innerRadius, outerRadius, payload} = props;
         const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -85,7 +85,7 @@ const TotalTaxRevenueByBracket: React.FC<TaxDistributionChartProps> = ({brackets
         return (
             <ul style={{
                 display: 'flex',
-                flexDirection:'column',
+                flexDirection: 'column',
                 padding: 0, margin: 0, listStyle: 'none'
             }}>
                 <li>

@@ -20,9 +20,9 @@ const PopulationField: React.FC<PopulationFieldProps> = ({val}) => {
     }
 
     return (
-            <Typography variant="body1">
-                {formattedPopulation} {humanReadable && <span> ({humanReadable})</span>}
-            </Typography>
+        <Typography variant="body1">
+            {formattedPopulation} {humanReadable && <span> ({humanReadable})</span>}
+        </Typography>
     );
 };
 

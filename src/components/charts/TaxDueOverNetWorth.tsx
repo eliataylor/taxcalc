@@ -8,10 +8,10 @@ import {formatMoney} from '../../utils/formatters.ts';
 /**
  * Bar chart showing tax due as percentage of net worth by bracket
  */
-const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, moneySupply, payingPopulation}) => {
+const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, moneySupply}) => {
 
     const data = useMemo(() => {
-        return brackets.map((bracket, index) => {
+        return brackets.map((bracket) => {
             const taxAmount = calculateBracketTax(bracket);
             const netWorth = calculateNetWorth(bracket);
 
