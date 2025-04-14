@@ -308,8 +308,8 @@ const Calculator: React.FC = () => {
                 </Typography>
 
                 <Typography variant="subtitle1">
-                    <b>The goal</b> for this calculator is to build a fair tax schedule that earns at least our current Federal Budget.</Typography>
-                <Typography variant="subtitle1" sx={{marginBottom:0}}><b>One challenge</b> is how to define "Net Worth" for Individuals, Banks, and Corporations. Our current definition for Individuals is based on these 5
+                    <b>One goal</b> for this calculator is to build a fair tax schedule that earns at least as much as our current Federal Budget.</Typography>
+                <Typography variant="subtitle1" sx={{marginBottom:0}}><b>One challenge</b> is how to define "Net Worth" for Individuals, Banks, and Corporations. Our current definition for Individual's Net Worth is based on these 5
                     variables:</Typography>
 
                 <List sx={{marginLeft:2, paddingTop:0, marginTop:0}}>
@@ -324,6 +324,10 @@ const Calculator: React.FC = () => {
                     <ListItemText primary={"Vacant Property"}
                                   secondary={"This would be a higher rate to prevent parking large capital in vacant land."}/>
                 </List>
+
+                <Typography variant="subtitle1" sx={{marginBottom:0}}><b>Other challenges</b> are how <a href={"https://chatgpt.com/share/67fc7aa3-c9a4-800e-9d84-d9e9e0a847a4"} target={"_blank"}>incorporate debt</a>, how to treat capital controlled by Banks and Corporations, and of course how to implement this over time.</Typography>
+
+                <Divider sx={{m:2}} />
 
                 <Typography variant="subtitle1">
                     To contribute, please open Issues or Pull Requests on the open source code on <a
