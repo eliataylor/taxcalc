@@ -1,8 +1,6 @@
 import React from 'react';
-import {Box, Card, CardContent, Grid, IconButton, InputAdornment, Slider, TextField, Typography} from '@mui/material';
-import {InfoOutline} from '@mui/icons-material';
+import {Box, Card, CardContent, Grid, InputAdornment, Slider, TextField, Typography} from '@mui/material';
 import {TaxBracketProps} from '../../types';
-import {HtmlTooltip} from "../research/Tooltip.tsx";
 import {formatMoney, formatPercentage, formatPopulation} from '../../utils/formatters.ts';
 import {lighten} from '@mui/material/styles'
 import {calculateBracketTax, calculateNetWorth} from "../../utils/calculations.ts";
