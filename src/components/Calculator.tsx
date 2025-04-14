@@ -296,7 +296,7 @@ const Calculator: React.FC = () => {
         <Box width={'100%'}>
             <Box p={1} mb={4}>
                 <Typography variant="h6" component={'h1'}>
-                    <em>What if Taxes were based on <b>Net Worth</b> instead of Annual Income?</em>
+                    <em>What if taxes were based on <b>Net Worth</b> instead of Annual Income?</em>
                 </Typography>
 
                 <Typography variant="body2" component={'li'} sx={{marginLeft:2}}>
