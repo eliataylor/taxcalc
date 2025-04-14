@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Box, Button, Divider, Grid, Paper, Typography} from '@mui/material';
+import {Alert, Box, Button, Divider, Grid, List, ListItemText, Paper, Typography} from '@mui/material';
 import {v4 as uuidv4} from 'uuid';
 
 // Import components
@@ -294,27 +294,56 @@ const Calculator: React.FC = () => {
 
     return (
         <Box width={'100%'}>
+            <Box p={1} mb={4}>
+                <Typography variant="h6" component={'h1'}>
+                    <em>What if Taxes were based on <b>Net Worth</b> instead of Annual Income?</em>
+                </Typography>
+
+                <Typography variant="body2" component={'li'} sx={{marginLeft:2}}>
+                    <b>Pros</b>: Encourage circulation of money supply :)
+                </Typography>
+
+                <Typography variant="body2" component={'li'} sx={{marginLeft:2, marginBottom:2}}>
+                    <b>Cons</b>: Encourages consumerism :(
+                </Typography>
+
+                <Typography variant="subtitle1">
+                    <b>The goal</b> for this calculator is to build a fair tax schedule that earns at least our current Federal Budget.</Typography>
+                <Typography variant="subtitle1" sx={{marginBottom:0}}><b>One challenge</b> is how to define "Net Worth" for Individuals, Banks, and Corporations. Our current definition for Individuals is based on these 5
+                    variables:</Typography>
+
+                <List sx={{marginLeft:2, paddingTop:0, marginTop:0}}>
+                    <ListItemText primary={"Checking Account Balance"}
+                                  secondary={"This only includes easily accessible capital."}/>
+                    <ListItemText primary={"Savings Account Balance"}
+                                  secondary={"This includes long term accounts with early withdrawal penalties like IRAs and CDs."}/>
+                    <ListItemText primary={"Overseas Balance"}
+                                  secondary={"This is to prevent offshoring money to avoid taxes."}/>
+                    <ListItemText primary={"Occupied Property"}
+                                  secondary={"This would be a lower tax rate on land value, when the land is occupied similar to the overall area's density, given other uses like agriculture and industry."}/>
+                    <ListItemText primary={"Vacant Property"}
+                                  secondary={"This would be a higher rate to prevent parking large capital in vacant land."}/>
+                </List>
+
+                <Typography variant="subtitle1">
+                    To contribute, please open Issues or Pull Requests on the open source code on <a
+                    href={"https://github.com/eliataylor/taxcalc"}
+                    target={"_blank"}><img src={'github-mark-white.svg'} height={17}
+                                           style={{marginRight: 3}}/>GitHub</a>. Also consider contributing to this
+                    Google Doc of <a
+                    href={"https://docs.google.com/document/d/1qCxG9i8CHDaBKULj7ITyCVCcWngkd6edAwGGiV1Z2Zo/edit?usp=sharing"}
+                    target={"_blank"}>research</a> gathered by Gemini <img src={'gemini-logo.png'} height={17} style={{marginRight: 0}}/>.
+                </Typography>
+
+
+            </Box>
+
             <Grid container p={1} justifyContent={'space-between'}>
+
                 <Grid>
-                    <Typography variant="h4" component={'h1'}>
-                        New Era Tax Calculator
-                    </Typography>
                     <Typography variant="subtitle1">
-                        <a href={"https://docs.google.com/document/d/1qCxG9i8CHDaBKULj7ITyCVCcWngkd6edAwGGiV1Z2Zo/edit?usp=sharing"}
-                           target={"_blank"}>Research and Data Sources</a>
+
                     </Typography>
-                </Grid>
-
-                <Grid spacing={1} gap={2}>
-                    <ExportScenario
-                        population={population}
-                        moneySupply={moneySupply}
-                        brackets={brackets}
-                        totalTaxRevenue={totalTaxRevenue}
-                        taxBalancePercentage={taxBalancePercentage}
-                    />
-
-                    <ImportScenario onImport={handleImport}/>
                 </Grid>
             </Grid>
 
@@ -322,7 +351,19 @@ const Calculator: React.FC = () => {
             <Grid container spacing={1}>
                 {/* 2Left column - Global settings */}
                 <Grid size={{xs: 12, md: 4}} style={{position: 'relative'}}>
-                    <Paper sx={{p: 1, pt: 2, height: '100%'}}>
+                    <Paper sx={{p: 1, pt: 1, height: '100%'}}>
+
+                        <Grid container mb={4} spacing={1} gap={2} justifyContent={'space-between'}>
+                            <ImportScenario onImport={handleImport}/>
+                            <ExportScenario
+                                population={population}
+                                moneySupply={moneySupply}
+                                brackets={brackets}
+                                totalTaxRevenue={totalTaxRevenue}
+                                taxBalancePercentage={taxBalancePercentage}
+                            />
+                        </Grid>
+
                         <Box sx={{mb: 3}}>
                             <PayingPopulation
                                 val={population}
@@ -355,8 +396,8 @@ const Calculator: React.FC = () => {
                             <TaxDueOverNetWorth moneySupply={moneySupply}
                                                 brackets={brackets}/>
                         </Box>
-
                     </Paper>
+
                 </Grid>
 
                 {/* Right column - Tax brackets and results */}
@@ -367,6 +408,7 @@ const Calculator: React.FC = () => {
                             <Button
                                 variant="contained"
                                 color="primary"
+                                size={'small'}
                                 onClick={addNewBracket}
                             >
                                 Add Bracket
@@ -396,7 +438,7 @@ const Calculator: React.FC = () => {
                                     color="error"
                                     size="small"
                                     onClick={() => removeBracket(bracket.id)}
-                                    sx={{mt: -2, ml: 2}}
+                                    sx={{mt: -3}}
                                 >
                                     Remove
                                 </Button>

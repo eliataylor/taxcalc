@@ -66,7 +66,8 @@ const TaxBracket: React.FC<TaxBracketProps> = ({
 
                     <Grid mt={3} direction={'column'} container justifyContent={'space-between'} gap={3}>
                         {bracket.levyTypes.map((levyType, index) => {
-                            return <Grid container wrap={'nowrap'} justifyContent={'space-between'}
+                            return <Grid container wrap={'nowrap'}
+                                         justifyContent={'space-between'}
                                          alignContent={'flex-start'}
                                          alignItems={'flex-start'} gap={3}
                                          key={[bracket.id, levyType.name].join('-')}>
@@ -78,18 +79,6 @@ const TaxBracket: React.FC<TaxBracketProps> = ({
                                         fullWidth
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                                            endAdornment: <HtmlTooltip
-                                                title={
-                                                    <React.Fragment>
-                                                        <Typography color="inherit">Tooltip with HTML</Typography>
-                                                        <em>{"And here's"}</em> <b>{'some'}</b>
-                                                        <u>{'amazing content'}</u>.{' '}
-                                                        {"It's very engaging. Right?"}
-                                                    </React.Fragment>
-                                                }
-                                            >
-                                                <IconButton><InfoOutline/></IconButton>
-                                            </HtmlTooltip>
                                         }}
                                         helperText={`${formatMoney(levyType.dollars)} per person`}
                                     />
@@ -120,14 +109,16 @@ const TaxBracket: React.FC<TaxBracketProps> = ({
                         })}
                     </Grid>
 
-                    <Typography variant={'subtitle2'} align={'center'} pl={1} color={bracket.color}>Net Worth:
-                        ${formatPopulation(calculateNetWorth(bracket))} /
-                        ${formatPopulation(calculateNetWorth(bracket) / bracket.population)} per
-                        person</Typography>
-                    <Typography variant={'subtitle2'} align={'center'} pl={1} color={bracket.color}>Taxes Due:
-                        ${formatPopulation(calculateBracketTax(bracket))} /
-                        ${formatPopulation(calculateBracketTax(bracket) / bracket.population)} per
-                        person</Typography>
+                    <Grid>
+                        <Typography variant={'subtitle1'} align={'center'} color={bracket.color}><b>Net Worth</b>:
+                            ${formatPopulation(calculateNetWorth(bracket))} /
+                            ${formatPopulation(calculateNetWorth(bracket) / bracket.population)} per
+                            person</Typography>
+                        <Typography variant={'subtitle1'} align={'center'} color={bracket.color}><b>Taxes Due</b>:
+                            ${formatPopulation(calculateBracketTax(bracket))} /
+                            ${formatPopulation(calculateBracketTax(bracket) / bracket.population)} per
+                            person</Typography>
+                    </Grid>
                 </Box>
             </CardContent>
         </Card>
