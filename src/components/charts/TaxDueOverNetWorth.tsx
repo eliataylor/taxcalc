@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {Box, Paper, Typography} from '@mui/material';
 import {Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {TaxDistributionChartProps} from '../../types';
-import {calculateBracketTax, calculateNetWorth} from '../../utils/calculations';
+import {calculateBracketTax, calculateNetWorth} from '../../utils/calculations.ts';
 import {formatMoney} from '../../utils/formatters.ts';
 
 /**
@@ -14,14 +14,15 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, mone
         return brackets.map((bracket) => {
             const taxAmount = calculateBracketTax(bracket);
             const netWorth = calculateNetWorth(bracket);
+            const pct = netWorth > 0 ? (taxAmount / netWorth) * 100 : 0;
 
             return {
                 name: bracket.name,
                 population: bracket.population,
                 popPercent: bracket.popPercent,
                 color: bracket.color,
-                value: (taxAmount / netWorth) * 100, // Convert to percentage
-                percentValue: (taxAmount / netWorth) * 100, // Store percentage value separately
+                value: pct,
+                percentValue: pct,
                 totalTax: taxAmount
             };
         });

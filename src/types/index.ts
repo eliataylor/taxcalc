@@ -2,10 +2,22 @@
  * Type definitions for the Tax Calculator application
  */
 
+export type LevyCategory = 'asset' | 'debt';
+
 export interface LevyTypes {
-    name: string;
+    key: string;
+    category: LevyCategory;
     dollars: number;
-    taxRate: number
+    taxRate: number;
+}
+
+export interface LevyTypeDefinition {
+    key: string;
+    name: string;
+    description: string;
+    rationale?: string;
+    defaultRate: number;
+    category: LevyCategory;
 }
 
 /**
@@ -28,6 +40,7 @@ export interface CensusFigure {
     id: string;
     name: string;
     value: number;
+    description?: string;
 }
 
 /**
@@ -37,6 +50,7 @@ export interface MoneySupplyOption {
     id: string;
     name: string;
     value: number;
+    description?: string;
 }
 
 /**
@@ -76,6 +90,7 @@ export interface MoneySupplyProps {
 export interface TaxBracketProps {
     bracket: TaxBracketData;
     totalPopulation: number;
+    levyTypeDefs: LevyTypeDefinition[];
     onChange: (id: string, changes: Partial<TaxBracketData>) => void;
 }
 
@@ -102,43 +117,41 @@ export interface HoldingsTaxComparisonChartProps {
 }
 
 /**
- * Props for the ExportScenario component
+ * Full persisted state of the calculator
  */
-export interface ExportScenarioProps {
+export interface PersistedState {
     population: number;
     moneySupply: number;
+    levyTypeDefs: LevyTypeDefinition[];
     brackets: TaxBracketData[];
-    totalTaxRevenue: number;
-    taxBalancePercentage: number;
 }
 
 /**
- * Data structure for exporting/importing scenarios
+ * A named saved scenario
  */
-export interface ScenarioData {
+export interface SavedScenario extends PersistedState {
+    id: string;
     name: string;
     date: string;
+    totalTaxRevenue?: number;
+    taxBalancePercentage?: number;
+}
+
+/**
+ * Props for the ScenarioManager component
+ */
+export interface ScenarioManagerProps {
     population: number;
     moneySupply: number;
+    levyTypeDefs: LevyTypeDefinition[];
     brackets: TaxBracketData[];
     totalTaxRevenue: number;
     taxBalancePercentage: number;
-}
-
-/**
- * Props for the ImportScenario component
- */
-export interface ImportScenarioProps {
-    onImport: (data: ImportData) => void;
-}
-
-/**
- * Data structure for importing scenarios
- */
-export interface ImportData {
-    population: number;
-    moneySupply: number;
-    brackets: TaxBracketData[];
+    scenarios: SavedScenario[];
+    onSave: (name: string) => void;
+    onLoad: (scenario: PersistedState) => void;
+    onDelete: (id: string) => void;
+    onReset: () => void;
 }
 
 /**

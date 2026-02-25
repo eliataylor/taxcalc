@@ -1,277 +1,113 @@
-import React, {useEffect, useState} from 'react';
-import {Alert, Box, Button, Divider, Grid, List, ListItemText, Paper, Typography} from '@mui/material';
+import React, {useCallback, useMemo, useState} from 'react';
+import {
+    Alert,
+    Box,
+    Button,
+    Chip,
+    Divider,
+    Grid,
+    Paper,
+    TextField,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography,
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import {v4 as uuidv4} from 'uuid';
+import AddIcon from '@mui/icons-material/Add';
+import {useSearchParams} from 'react-router-dom';
 
-// Import components
 import PayingPopulation from './inputs/PayingPopulation';
 import MoneySupply from './inputs/MoneySupply';
 import TaxBracket from './tax/TaxBracket';
-import ExportScenario from './tax/ExportScenario';
-import ImportScenario from './tax/ImportScenario';
-import TotalTaxRevenueByBracket from './charts/TotalTaxRevenueByBracket.tsx';
+import TaxBracketCondensed from './tax/TaxBracketCondensed.tsx';
+import ScenarioManager from './tax/ScenarioManager.tsx';
+import TotalTaxRevenueByBracket from './charts/TotalTaxRevenueByBracket';
+import TaxDueOverNetWorth from './charts/TaxDueOverNetWorth';
 
-// Import types and utilities
-import {ImportData, TaxBracketData} from '../types';
+import {LevyTypeDefinition, TaxBracketData} from '../types';
 import {
     calculatePopulationBalance,
     calculateTaxPercentage,
     calculateTotalTax,
-    updateBracketTaxes
-} from '../utils/calculations';
-import {formatPopulation} from "../utils/formatters.ts";
-import TaxDueOverNetWorth from "./charts/TaxDueOverNetWorth.tsx";
+    updateBracketTaxes,
+} from '../utils/calculations.ts';
+import {formatPopulation} from '../utils/formatters.ts';
+import {usePersistedState} from '../hooks/usePersistedState';
+import {MONEY_SUPPLY_TYPES} from '../data/definitions.ts';
 
 // const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#A4DE6C']
 /**
  * Main calculator component that manages state and coordinates other components
  */
 const Calculator: React.FC = () => {
-    // State for the calculator
-    const [population, setPopulation] = useState<number>(331_900_000); // Default to taxpayers
-    const [moneySupply, setMoneySupply] = useState<number>(6_300_000_000_000); // Default to tax revenue
-    const [brackets, setBrackets] = useState<TaxBracketData[]>([
-        {
-            "id": "75ece48e-5aac-4da5-942f-0bf5c3e4c4dd",
-            "name": "Not Holding",
-            "population": 82975000,
-            "popPercent": 0.25,
-            "color": "#0088FE",
-            "levyTypes": [
-                {
-                    "name": "Checking Account Balance",
-                    "dollars": 500,
-                    "taxRate": 0.05
-                },
-                {
-                    "name": "Savings Account Balance",
-                    "dollars": 0,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Overseas Balance",
-                    "dollars": 0,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Occupied Property",
-                    "dollars": 0,
-                    "taxRate": 0.05
-                },
-                {
-                    "name": "Vacant Property",
-                    "dollars": 0,
-                    "taxRate": 0.3
-                }
-            ],
-            "totalTax": 2074375000
-        },
-        {
-            "id": "6eef75e3-3296-4930-8913-3ab2ad9e325b",
-            "name": "Lower Holders",
-            "population": 116165000,
-            "popPercent": 0.35,
-            "color": "#8884D8",
-            "levyTypes": [
-                {
-                    "name": "Checking Account Balance",
-                    "dollars": 2000,
-                    "taxRate": 0.07
-                },
-                {
-                    "name": "Savings Account Balance",
-                    "dollars": 5000,
-                    "taxRate": 0.07
-                },
-                {
-                    "name": "Overseas Balance",
-                    "dollars": 0,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Occupied Property",
-                    "dollars": 0,
-                    "taxRate": 0.05
-                },
-                {
-                    "name": "Vacant Property",
-                    "dollars": 0,
-                    "taxRate": 0.3
-                }
-            ],
-            "totalTax": 56920850000.00001
-        },
-        {
-            "id": "e09b9289-735f-40cf-a278-6133e3c6d308",
-            "name": "Mid Holders",
-            "population": 99570000,
-            "popPercent": 0.3,
-            "color": "#00C49F",
-            "levyTypes": [
-                {
-                    "name": "Checking Account Balance",
-                    "dollars": 20000,
-                    "taxRate": 0.07
-                },
-                {
-                    "name": "Savings Account Balance",
-                    "dollars": 50000,
-                    "taxRate": 0.07
-                },
-                {
-                    "name": "Overseas Balance",
-                    "dollars": 5000,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Occupied Property",
-                    "dollars": 200000,
-                    "taxRate": 0.05
-                },
-                {
-                    "name": "Vacant Property",
-                    "dollars": 0,
-                    "taxRate": 0.3
-                }
-            ],
-            "totalTax": 1533378000000
-        },
-        {
-            "id": "32a6f43d-ed64-4c27-a479-26dc43e01ac9",
-            "name": "High Holders",
-            "population": 33189200.000000004,
-            "popPercent": 0.09999758963543237,
-            "color": "#FFBB28",
-            "levyTypes": [
-                {
-                    "name": "Checking Account Balance",
-                    "dollars": 200000,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Savings Account Balance",
-                    "dollars": 200000,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Overseas Balance",
-                    "dollars": 20000,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Occupied Property",
-                    "dollars": 500000,
-                    "taxRate": 0.05
-                },
-                {
-                    "name": "Vacant Property",
-                    "dollars": 400000,
-                    "taxRate": 0.3
-                }
-            ],
-            "totalTax": 6206380400000.001
-        },
-        {
-            "id": "ed04e7d9-99fe-4a0b-aeb4-c22dd0b03347",
-            "name": "Top 3%",
-            "population": 800,
-            "popPercent": 0.0000024103645676408555,
-            "color": "#FF8042",
-            "levyTypes": [
-                {
-                    "name": "Checking Account Balance",
-                    "dollars": 50000000,
-                    "taxRate": 0.15
-                },
-                {
-                    "name": "Savings Account Balance",
-                    "dollars": 1000000000,
-                    "taxRate": 0.15
-                },
-                {
-                    "name": "Overseas Balance",
-                    "dollars": 100000000,
-                    "taxRate": 0.1
-                },
-                {
-                    "name": "Occupied Property",
-                    "dollars": 100000000,
-                    "taxRate": 0.05
-                },
-                {
-                    "name": "Vacant Property",
-                    "dollars": 10000000,
-                    "taxRate": 0.3
-                }
-            ],
-            "totalTax": 140400000000
-        }
-    ]);
+    const {
+        population,
+        moneySupply,
+        levyTypeDefs,
+        brackets,
+        setPopulation,
+        setMoneySupply,
+        setLevyTypeDefs,
+        setBrackets,
+        saveScenario,
+        loadScenario,
+        deleteScenario,
+        resetToDefaults,
+        scenarios,
+        isLoading,
+    } = usePersistedState();
 
-    // Calculate tax metrics
-    const [totalTaxRevenue, setTotalTaxRevenue] = useState<number>(0);
-    const [populationBalance, setPopulationBalance] = useState<number>(0);
-    const [taxBalancePercentage, setTaxBalancePercentage] = useState<number>(0);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const viewMode = searchParams.get('view') === 'condensed' ? 'condensed' : 'edit';
 
-    // Update calculations when related state changes
-    useEffect(() => {
-        // Calculate total tax revenue
-        const newTotalTax = calculateTotalTax(brackets);
-        setTotalTaxRevenue(newTotalTax);
+    const setViewMode = useCallback((mode: 'edit' | 'condensed') => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            if (mode === 'edit') {
+                next.delete('view');
+            } else {
+                next.set('view', mode);
+            }
+            return next;
+        }, {replace: true});
+    }, [setSearchParams]);
 
-        // Calculate population balance
-        const newPopulationBalance = calculatePopulationBalance(population, brackets);
-        setPopulationBalance(newPopulationBalance);
+    const [newLevyName, setNewLevyName] = useState('');
+    const [newLevyCategory, setNewLevyCategory] = useState<'asset' | 'debt'>('asset');
 
-        // Calculate tax balance percentage
-        const newTaxPercentage = calculateTaxPercentage(newTotalTax, moneySupply);
-        setTaxBalancePercentage(newTaxPercentage);
-
-        // Update the total tax for each bracket
-        setBrackets(updateBracketTaxes(brackets));
-    }, [brackets, population, moneySupply]);
+    const computedBrackets = useMemo(() => updateBracketTaxes(brackets), [brackets]);
+    const totalTaxRevenue = useMemo(() => calculateTotalTax(computedBrackets), [computedBrackets]);
+    const populationBalance = useMemo(
+        () => calculatePopulationBalance(population, computedBrackets),
+        [population, computedBrackets],
+    );
+    const taxBalancePercentage = useMemo(
+        () => calculateTaxPercentage(totalTaxRevenue, moneySupply),
+        [totalTaxRevenue, moneySupply],
+    );
 
     const handleBracketChange = (id: string, changes: Partial<TaxBracketData>) => {
         setBrackets(brackets.map(bracket =>
-            bracket.id === id ? {...bracket, ...changes} : bracket
+            bracket.id === id ? {...bracket, ...changes} : bracket,
         ));
     };
 
     const addNewBracket = () => {
         const newBracket: TaxBracketData = {
-            color: "#FF8042",
+            color: '#FF8042',
             id: uuidv4(),
             name: `Bracket ${brackets.length + 1}`,
             popPercent: 0,
             population: 0,
-            levyTypes: [
-                {
-                    name: 'Checking Account Balance',
-                    dollars: 0,
-                    taxRate: 0
-                },
-                {
-                    name: 'Savings Account Balance',
-                    dollars: 0,
-                    taxRate: 0
-                },
-                {
-                    name: 'Overseas Balance',
-                    dollars: 2000,
-                    taxRate: 0
-                },
-                {
-                    name: 'Occupied Property',
-                    dollars: 0,
-                    taxRate: 0
-                },
-                {
-                    name: 'Vacant Property',
-                    dollars: 0,
-                    taxRate: 0
-                },
-            ]
+            levyTypes: levyTypeDefs.map(def => ({
+                key: def.key,
+                category: def.category,
+                dollars: 0,
+                taxRate: def.defaultRate,
+            })),
         };
-
         setBrackets([...brackets, newBracket]);
     };
 
@@ -279,176 +115,283 @@ const Calculator: React.FC = () => {
         setBrackets(brackets.filter(bracket => bracket.id !== id));
     };
 
-    const handleImport = (data: ImportData) => {
-        setPopulation(data.population);
-        setMoneySupply(data.moneySupply);
+    const addLevyType = () => {
+        const trimmed = newLevyName.trim();
+        if (!trimmed) return;
+        const key = trimmed.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        if (levyTypeDefs.some(d => d.key === key)) return;
 
-        // Ensure each imported bracket has an ID
-        const bracketsWithIds = data.brackets.map(bracket => ({
+        const newDef: LevyTypeDefinition = {
+            key,
+            name: trimmed,
+            description: '',
+            defaultRate: 0.05,
+            category: newLevyCategory,
+        };
+        setLevyTypeDefs([...levyTypeDefs, newDef]);
+        setBrackets(brackets.map(bracket => ({
             ...bracket,
-            id: bracket.id || uuidv4()
-        }));
-
-        setBrackets(bracketsWithIds);
+            levyTypes: [...bracket.levyTypes, {key, category: newLevyCategory, dollars: 0, taxRate: newDef.defaultRate}],
+        })));
+        setNewLevyName('');
+        setNewLevyCategory('asset');
     };
+
+    const removeLevyType = (key: string) => {
+        setLevyTypeDefs(levyTypeDefs.filter(d => d.key !== key));
+        setBrackets(brackets.map(bracket => ({
+            ...bracket,
+            levyTypes: bracket.levyTypes.filter(l => l.key !== key),
+        })));
+    };
+
+    if (isLoading) {
+        return (
+            <Box sx={{p: 4, textAlign: 'center'}}>
+                <Typography>Loading...</Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box width={'100%'}>
-            <Box p={1} mb={4}>
-                <Typography variant="h6" component={'h1'}>
-                    <em>What if taxes were based on <b>Net Worth</b> instead of Annual Income?</em>
-                </Typography>
-
-                <Typography variant="body2" component={'li'} sx={{marginLeft:2}}>
-                    <b>Pros</b>: Encourage circulation of money supply :)
-                </Typography>
-
-                <Typography variant="body2" component={'li'} sx={{marginLeft:2, marginBottom:2}}>
-                    <b>Cons</b>: Encourages consumerism :(
-                </Typography>
-
-                <Typography variant="subtitle1">
-                    <b>One goal</b> for this calculator is to build a fair tax schedule that earns at least as much as our current Federal Budget.</Typography>
-                <Typography variant="subtitle1" sx={{marginBottom:0}}><b>One challenge</b> is how to define "Net Worth" for Individuals, Banks, and Corporations. Our current definition for Individual's Net Worth is based on these 5
-                    variables:</Typography>
-
-                <List sx={{marginLeft:2, paddingTop:0, marginTop:0}}>
-                    <ListItemText primary={"Checking Account Balance"}
-                                  secondary={"This only includes easily accessible capital."}/>
-                    <ListItemText primary={"Savings Account Balance"}
-                                  secondary={"This includes long term accounts with early withdrawal penalties like IRAs and CDs."}/>
-                    <ListItemText primary={"Overseas Balance"}
-                                  secondary={"This is to prevent offshoring money to avoid taxes."}/>
-                    <ListItemText primary={"Occupied Property"}
-                                  secondary={"This would be a lower tax rate on land value, when the land is occupied similar to the overall area's density, given other uses like agriculture and industry."}/>
-                    <ListItemText primary={"Vacant Property"}
-                                  secondary={"This would be a higher rate to prevent parking large capital in vacant land."}/>
-                </List>
-
-                <Typography variant="subtitle1" sx={{marginBottom:0}}><b>Other challenges</b> are how <a href={"https://chatgpt.com/share/67fc7aa3-c9a4-800e-9d84-d9e9e0a847a4"} target={"_blank"}>incorporate debt</a>, how to treat capital controlled by Banks and Corporations, and of course how to implement this over time.</Typography>
-
-                <Divider sx={{m:2}} />
-
-                <Typography variant="subtitle1">
-                    To contribute, please open Issues or Pull Requests on the open source code on <a
-                    href={"https://github.com/eliataylor/taxcalc"}
-                    target={"_blank"}><img src={'github-mark-white.svg'} height={17}
-                                           style={{marginRight: 3}}/>GitHub</a>. Also consider contributing to this
-                    Google Doc of <a
-                    href={"https://docs.google.com/document/d/1qCxG9i8CHDaBKULj7ITyCVCcWngkd6edAwGGiV1Z2Zo/edit?usp=sharing"}
-                    target={"_blank"}>research</a> gathered by Gemini <img src={'gemini-logo.png'} height={17} style={{marginRight: 0}}/>.
-                </Typography>
-
-
-            </Box>
-
             <Grid container p={1} justifyContent={'space-between'}>
-
                 <Grid>
                     <Typography variant="subtitle1">
-
                     </Typography>
                 </Grid>
             </Grid>
 
-
             <Grid container spacing={1}>
-                {/* 2Left column - Global settings */}
-                <Grid size={{xs: 12, md: 4}} style={{position: 'relative'}}>
-                    <Paper sx={{p: 1, pt: 1, height: '100%'}}>
+                {/* Left column - Global settings */}
+                <Grid container direction={'column'}
+                sx={{padding:1.5}}
+                     size={{xs: 12, md: 4}} gap={2} style={{position: 'relative'}}>
 
                         <Grid container mb={4} spacing={1} gap={2} justifyContent={'space-between'}>
-                            <ImportScenario onImport={handleImport}/>
-                            <ExportScenario
+                            <ScenarioManager
                                 population={population}
                                 moneySupply={moneySupply}
-                                brackets={brackets}
+                                levyTypeDefs={levyTypeDefs}
+                                brackets={computedBrackets}
                                 totalTaxRevenue={totalTaxRevenue}
                                 taxBalancePercentage={taxBalancePercentage}
+                                scenarios={scenarios}
+                                onSave={name => saveScenario(name, totalTaxRevenue, taxBalancePercentage)}
+                                onLoad={loadScenario}
+                                onDelete={deleteScenario}
+                                onReset={resetToDefaults}
                             />
                         </Grid>
 
-                        <Box sx={{mb: 3}}>
+                        <Grid sx={{mb: 3}}>
                             <PayingPopulation
                                 val={population}
                                 onValueChange={setPopulation}
                             />
-                        </Box>
+                        </Grid>
 
                         <Divider sx={{my: 3}}/>
 
-                        <Box>
+                        <Grid>
                             <MoneySupply
                                 val={moneySupply}
                                 onValueChange={setMoneySupply}
                             />
-                        </Box>
+                        </Grid>
 
                         <Divider sx={{my: 3}}/>
 
-                        <Box sx={{mb: 2}}>
+                        <Grid sx={{mb: 2}}>
                             <Typography variant="subtitle2">Total Tax Revenue:</Typography>
-                            <Typography
-                                color={totalTaxRevenue > moneySupply ? 'green' : 'red'}>${formatPopulation(totalTaxRevenue)} ({taxBalancePercentage.toFixed(2)}%
-                                of
-                                money supply)</Typography>
-                        </Box>
+                            {(() => {
+                                const ref = MONEY_SUPPLY_TYPES.find(m => m.value === moneySupply);
+                                const refName = ref?.name ?? 'reference';
+                                const isAnnualFlow = ['federal_budget', 'tax_revenue', 'discretionary'].includes(ref?.id ?? '');
+                                const pct = taxBalancePercentage;
+                                let color: string;
+                                if (isAnnualFlow) {
+                                    color = pct > 100 ? 'red' : pct >= 60 ? 'green' : 'orange';
+                                } else {
+                                    color = pct > 50 ? 'red' : pct > 15 ? 'orange' : 'green';
+                                }
+                                return (
+                                    <Typography color={color}>
+                                        ${formatPopulation(totalTaxRevenue)} ({pct.toFixed(2)}% of {refName})
+                                    </Typography>
+                                );
+                            })()}
+                        </Grid>
 
-                        <Box sx={{pt: 3}}>
+                        <Grid sx={{pt: 3}}>
                             <TotalTaxRevenueByBracket moneySupply={moneySupply}
-                                                      brackets={brackets}/>
-                            <TaxDueOverNetWorth moneySupply={moneySupply}
-                                                brackets={brackets}/>
-                        </Box>
-                    </Paper>
+                                                      brackets={computedBrackets}/>
+                        </Grid>
 
+                        <Grid>
+                            <TaxDueOverNetWorth moneySupply={moneySupply}
+                                                brackets={computedBrackets}/>
+                        </Grid>
                 </Grid>
 
                 {/* Right column - Tax brackets and results */}
                 <Grid size={{xs: 12, md: 8}}>
-                    <Paper sx={{p: 1, mb: 3}}>
-                        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
-                            <Typography variant="h5">Tax Brackets</Typography>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size={'small'}
-                                onClick={addNewBracket}
-                            >
-                                Add Bracket
-                            </Button>
-                        </Box>
+                    {/* View toggle + header */}
+                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, px: 1}}>
+                        <Typography variant="h5">Tax Brackets</Typography>
+                        <ToggleButtonGroup
+                            value={viewMode}
+                            exclusive
+                            onChange={(_e, val) => val && setViewMode(val)}
+                            size="small"
+                        >
+                            <ToggleButton value="edit">
+                                <EditIcon sx={{fontSize: 18, mr: 0.5}}/>
+                                Edit
+                            </ToggleButton>
+                            <ToggleButton value="condensed">
+                                <ViewListIcon sx={{fontSize: 18, mr: 0.5}}/>
+                                Summary
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Box>
 
-                        {populationBalance !== 0 && (
-                            <Alert
-                                severity={populationBalance < 0 ? "error" : "warning"}
-                                sx={{mb: 2}}
-                            >
-                                {populationBalance < 0
-                                    ? `Population mismatch: ${Math.abs(populationBalance).toLocaleString()} more people in brackets than total!`
-                                    : `${populationBalance.toLocaleString()} people not included in any bracket.`}
-                            </Alert>
-                        )}
+                    {viewMode === 'edit' && (
+                        <>
+                            {/* Levy type management */}
+                            <Paper sx={{p: 2, mb: 2}}>
+                                <Typography variant="subtitle2" sx={{mb: 1}}>
+                                    Net Worth Components (Levy Types)
+                                </Typography>
+                                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1}}>
+                                    {levyTypeDefs.map(def => (
+                                        <Chip
+                                            key={def.key}
+                                            label={def.name}
+                                            color={def.category === 'debt' ? 'warning' : 'default'}
+                                            variant={def.category === 'debt' ? 'outlined' : 'filled'}
+                                            onDelete={() => removeLevyType(def.key)}
+                                            size="small"
+                                        />
+                                    ))}
+                                </Box>
+                                <Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
+                                    <TextField
+                                        size="small"
+                                        placeholder="New levy type name"
+                                        value={newLevyName}
+                                        onChange={e => setNewLevyName(e.target.value)}
+                                        onKeyDown={e => e.key === 'Enter' && addLevyType()}
+                                    />
+                                    <ToggleButtonGroup
+                                        value={newLevyCategory}
+                                        exclusive
+                                        onChange={(_e, val) => val && setNewLevyCategory(val)}
+                                        size="small"
+                                    >
+                                        <ToggleButton value="asset">Asset</ToggleButton>
+                                        <ToggleButton value="debt">Debt</ToggleButton>
+                                    </ToggleButtonGroup>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        startIcon={<AddIcon/>}
+                                        onClick={addLevyType}
+                                        disabled={!newLevyName.trim()}
+                                    >
+                                        Add
+                                    </Button>
+                                </Box>
+                            </Paper>
 
-                        {brackets.map(bracket => (
-                            <Box key={bracket.id} sx={{mb: 2}}>
-                                <TaxBracket
+                            <Paper sx={{p: 1, mb: 3}}>
+                                <Box sx={{display: 'flex', justifyContent: 'flex-end', mb: 2}}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size={'small'}
+                                        onClick={addNewBracket}
+                                    >
+                                        Add Bracket
+                                    </Button>
+                                </Box>
+
+                                {populationBalance !== 0 && (
+                                    <Alert
+                                        severity={populationBalance < 0 ? 'error' : 'warning'}
+                                        sx={{mb: 2}}
+                                    >
+                                        {populationBalance < 0
+                                            ? `Population mismatch: ${Math.abs(populationBalance).toLocaleString()} more people in brackets than total!`
+                                            : `${populationBalance.toLocaleString()} people not included in any bracket.`}
+                                    </Alert>
+                                )}
+
+                                {computedBrackets.map(bracket => (
+                                    <Box key={bracket.id} sx={{mb: 2}}>
+                                        <TaxBracket
+                                            bracket={bracket}
+                                            totalPopulation={population}
+                                            levyTypeDefs={levyTypeDefs}
+                                            onChange={handleBracketChange}
+                                        />
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            size="small"
+                                            onClick={() => removeBracket(bracket.id)}
+                                            sx={{mt: -3}}
+                                        >
+                                            Remove
+                                        </Button>
+                                    </Box>
+                                ))}
+                            </Paper>
+                        </>
+                    )}
+
+                    {viewMode === 'condensed' && (
+                        <Paper sx={{p: 2, mb: 3}}>
+                            {populationBalance !== 0 && (
+                                <Alert
+                                    severity={populationBalance < 0 ? 'error' : 'warning'}
+                                    sx={{mb: 2}}
+                                >
+                                    {populationBalance < 0
+                                        ? `Population mismatch: ${Math.abs(populationBalance).toLocaleString()} more people in brackets than total!`
+                                        : `${populationBalance.toLocaleString()} people not included in any bracket.`}
+                                </Alert>
+                            )}
+
+                            {computedBrackets.map(bracket => (
+                                <TaxBracketCondensed
+                                    key={bracket.id}
                                     bracket={bracket}
                                     totalPopulation={population}
-                                    onChange={handleBracketChange}
+                                    levyTypeDefs={levyTypeDefs}
                                 />
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    size="small"
-                                    onClick={() => removeBracket(bracket.id)}
-                                    sx={{mt: -3}}
-                                >
-                                    Remove
-                                </Button>
-                            </Box>
-                        ))}
-                    </Paper>
+                            ))}
+
+                            {/* Totals footer */}
+                            {computedBrackets.length > 0 && (
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    pt: 1.5,
+                                    mt: 1,
+                                    borderTop: 2,
+                                    borderColor: 'divider',
+                                }}>
+                                    <Typography variant="subtitle2">
+                                        Total Population: {formatPopulation(computedBrackets.reduce((s, b) => s + b.population, 0))}
+                                    </Typography>
+                                    <Typography variant="subtitle2">
+                                        Total Revenue: ${formatPopulation(totalTaxRevenue)} ({taxBalancePercentage.toFixed(2)}%)
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Paper>
+                    )}
                 </Grid>
             </Grid>
         </Box>

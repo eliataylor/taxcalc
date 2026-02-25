@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {Box, Paper, Typography} from '@mui/material';
 import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {HoldingsTaxComparisonChartProps} from '../../types';
-import {calculateBracketTax, calculateTotalHoldings} from '../../utils/calculations';
+import {calculateBracketTax, calculateTotalHoldings} from '../../utils/calculations.ts';
 import {formatMoney, formatPercentage} from '../../utils/formatters.ts';
 
 /**

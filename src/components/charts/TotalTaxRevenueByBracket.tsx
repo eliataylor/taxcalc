@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {Box, Paper, Typography} from '@mui/material';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {TaxDistributionChartProps} from '../../types';
-import {calculateBracketTax} from '../../utils/calculations';
+import {calculateBracketTax} from '../../utils/calculations.ts';
 import {formatMoney} from '../../utils/formatters.ts';
 
 /**
@@ -86,7 +86,8 @@ const TotalTaxRevenueByBracket: React.FC<TaxDistributionChartProps> = ({brackets
             <ul style={{
                 display: 'flex',
                 flexDirection: 'column',
-                padding: 0, margin: 0, listStyle: 'none'
+                margin:'auto', 
+                listStyle: 'none'
             }}>
                 <li>
                     <u>Total Tax Revenues by Brackets</u>

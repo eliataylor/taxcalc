@@ -1,6 +1,9 @@
 import React from 'react';
-import {createTheme, CssBaseline, ThemeProvider} from '@mui/material';
-import Calculator from './components/Calculator';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import CalculatorPage from './pages/CalculatorPage';
+import VariablesPage from './pages/VariablesPage';
 
 // Create a theme instance
 const theme = createTheme({
@@ -70,8 +73,14 @@ const theme = createTheme({
 const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline/>
-            <Calculator/>
+            <CssBaseline />
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/calculator" element={<CalculatorPage />} />
+                    <Route path="/variables" element={<VariablesPage />} />
+                </Routes>
+            </BrowserRouter>
         </ThemeProvider>
     );
 };

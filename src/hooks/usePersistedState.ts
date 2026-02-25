@@ -1,0 +1,165 @@
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {v4 as uuidv4} from 'uuid';
+import {LevyTypeDefinition, PersistedState, SavedScenario, TaxBracketData} from '../types';
+import {
+    DEFAULT_BRACKETS,
+    DEFAULT_LEVY_TYPES,
+    DEFAULT_MONEY_SUPPLY,
+    DEFAULT_POPULATION,
+} from '../data/definitions.ts';
+
+const STATE_KEY = 'taxcalc_state';
+const SCENARIOS_KEY = 'taxcalc_scenarios';
+const DEBOUNCE_MS = 300;
+
+function readState(): PersistedState | null {
+    try {
+        const raw = localStorage.getItem(STATE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
+function writeState(state: PersistedState): void {
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+}
+
+function readScenarios(): SavedScenario[] {
+    try {
+        const raw = localStorage.getItem(SCENARIOS_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
+function writeScenarios(scenarios: SavedScenario[]): void {
+    localStorage.setItem(SCENARIOS_KEY, JSON.stringify(scenarios));
+}
+
+export function usePersistedState() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [population, setPopulationRaw] = useState(DEFAULT_POPULATION);
+    const [moneySupply, setMoneySupplyRaw] = useState(DEFAULT_MONEY_SUPPLY);
+    const [levyTypeDefs, setLevyTypeDefsRaw] = useState<LevyTypeDefinition[]>(DEFAULT_LEVY_TYPES);
+    const [brackets, setBracketsRaw] = useState<TaxBracketData[]>(DEFAULT_BRACKETS);
+    const [scenarios, setScenarios] = useState<SavedScenario[]>([]);
+
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const scheduleSave = useCallback((state: PersistedState) => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => writeState(state), DEBOUNCE_MS);
+    }, []);
+
+    const stateRef = useRef<PersistedState>({
+        population: DEFAULT_POPULATION,
+        moneySupply: DEFAULT_MONEY_SUPPLY,
+        levyTypeDefs: DEFAULT_LEVY_TYPES,
+        brackets: DEFAULT_BRACKETS,
+    });
+
+    useEffect(() => {
+        const saved = readState();
+        if (saved) {
+            setPopulationRaw(saved.population);
+            setMoneySupplyRaw(saved.moneySupply);
+            setLevyTypeDefsRaw(saved.levyTypeDefs ?? DEFAULT_LEVY_TYPES);
+            setBracketsRaw(saved.brackets);
+            stateRef.current = {
+                population: saved.population,
+                moneySupply: saved.moneySupply,
+                levyTypeDefs: saved.levyTypeDefs ?? DEFAULT_LEVY_TYPES,
+                brackets: saved.brackets,
+            };
+        }
+        setScenarios(readScenarios());
+        setIsLoading(false);
+    }, []);
+
+    const setPopulation = useCallback((val: number) => {
+        setPopulationRaw(val);
+        stateRef.current = {...stateRef.current, population: val};
+        scheduleSave(stateRef.current);
+    }, [scheduleSave]);
+
+    const setMoneySupply = useCallback((val: number) => {
+        setMoneySupplyRaw(val);
+        stateRef.current = {...stateRef.current, moneySupply: val};
+        scheduleSave(stateRef.current);
+    }, [scheduleSave]);
+
+    const setLevyTypeDefs = useCallback((defs: LevyTypeDefinition[]) => {
+        setLevyTypeDefsRaw(defs);
+        stateRef.current = {...stateRef.current, levyTypeDefs: defs};
+        scheduleSave(stateRef.current);
+    }, [scheduleSave]);
+
+    const setBrackets = useCallback((bkts: TaxBracketData[]) => {
+        setBracketsRaw(bkts);
+        stateRef.current = {...stateRef.current, brackets: bkts};
+        scheduleSave(stateRef.current);
+    }, [scheduleSave]);
+
+    const saveScenario = useCallback((name: string, totalTaxRevenue?: number, taxBalancePercentage?: number) => {
+        const scenario: SavedScenario = {
+            id: uuidv4(),
+            name,
+            date: new Date().toISOString(),
+            ...stateRef.current,
+            totalTaxRevenue,
+            taxBalancePercentage,
+        };
+        const updated = [...readScenarios(), scenario];
+        writeScenarios(updated);
+        setScenarios(updated);
+    }, []);
+
+    const loadScenario = useCallback((data: PersistedState) => {
+        setPopulationRaw(data.population);
+        setMoneySupplyRaw(data.moneySupply);
+        setLevyTypeDefsRaw(data.levyTypeDefs ?? DEFAULT_LEVY_TYPES);
+        setBracketsRaw(data.brackets);
+        stateRef.current = {
+            population: data.population,
+            moneySupply: data.moneySupply,
+            levyTypeDefs: data.levyTypeDefs ?? DEFAULT_LEVY_TYPES,
+            brackets: data.brackets,
+        };
+        writeState(stateRef.current);
+    }, []);
+
+    const deleteScenario = useCallback((id: string) => {
+        const updated = readScenarios().filter(s => s.id !== id);
+        writeScenarios(updated);
+        setScenarios(updated);
+    }, []);
+
+    const resetToDefaults = useCallback(() => {
+        const defaults: PersistedState = {
+            population: DEFAULT_POPULATION,
+            moneySupply: DEFAULT_MONEY_SUPPLY,
+            levyTypeDefs: DEFAULT_LEVY_TYPES,
+            brackets: DEFAULT_BRACKETS,
+        };
+        loadScenario(defaults);
+    }, [loadScenario]);
+
+    return {
+        population,
+        moneySupply,
+        levyTypeDefs,
+        brackets,
+        setPopulation,
+        setMoneySupply,
+        setLevyTypeDefs,
+        setBrackets,
+        saveScenario,
+        loadScenario,
+        deleteScenario,
+        resetToDefaults,
+        scenarios,
+        isLoading,
+    };
+}

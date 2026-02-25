@@ -12,7 +12,7 @@ import {TaxBracketData} from '../types';
  */
 export const calculateTotalTax = (brackets: TaxBracketData[]): number => {
     return brackets.reduce((total, bracket) => {
-        if (bracket.totalTax) {
+        if (bracket.totalTax !== undefined) {
             return total + bracket.totalTax;
         } else {
             return calculateBracketTax(bracket) + total;
@@ -57,44 +57,69 @@ export const calculatePopulationBalance = (
 };
 
 /**
- * Calculates the total holdings for a bracket (WARN: probably not a misleading figure)
+ * Calculates the gross asset holdings for a bracket (assets only, debts excluded).
  * @param bracket - Tax bracket data
- * @returns Total Holdings
+ * @returns Total gross holdings across the bracket population
  */
 export const calculateTotalHoldings = (bracket: TaxBracketData): number => {
     let sum = 0;
     bracket.levyTypes.forEach(levyType => {
-        sum += levyType.taxRate * levyType.dollars
-    })
-    return sum
+        if (levyType.category !== 'debt') {
+            sum += levyType.dollars;
+        }
+    });
+    return sum * bracket.population;
 };
 
+/**
+ * Calculates total debt for a bracket.
+ * @param bracket - Tax bracket data
+ * @returns Total debt across the bracket population
+ */
+export const calculateTotalDebt = (bracket: TaxBracketData): number => {
+    let sum = 0;
+    bracket.levyTypes.forEach(levyType => {
+        if (levyType.category === 'debt') {
+            sum += levyType.dollars;
+        }
+    });
+    return sum * bracket.population;
+};
 
 /**
- * Calculates the total tax revenue from all tax brackets
- * @param brackets - Array of tax bracket data
- * @returns Total tax revenue
+ * Calculates the net worth for a bracket (assets minus debts).
+ * @param bracket - Tax bracket data
+ * @returns Net worth across the bracket population
  */
 export const calculateNetWorth = (bracket: TaxBracketData): number => {
     let sum = 0;
     bracket.levyTypes.forEach(levyType => {
-        sum += levyType.dollars
-    })
+        if (levyType.category === 'debt') {
+            sum -= levyType.dollars;
+        } else {
+            sum += levyType.dollars;
+        }
+    });
     return sum * bracket.population;
 };
 
 
 /**
- * Calculates the total tax for a bracket
+ * Calculates the total tax for a bracket.
+ * Asset levies contribute tax; debt levies provide deductions (reduce tax).
  * @param bracket - Tax bracket data
- * @returns Total tax
+ * @returns Total tax (after debt deductions) for the bracket
  */
 export const calculateBracketTax = (bracket: TaxBracketData): number => {
     let sum = 0;
     bracket.levyTypes.forEach(levyType => {
-        sum += levyType.taxRate * levyType.dollars
-    })
-    return sum * bracket.population;
+        if (levyType.category === 'debt') {
+            sum -= levyType.taxRate * levyType.dollars;
+        } else {
+            sum += levyType.taxRate * levyType.dollars;
+        }
+    });
+    return Math.max(0, sum * bracket.population);
 };
 
 /**
