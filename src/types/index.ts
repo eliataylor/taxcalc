@@ -44,14 +44,17 @@ export interface CensusFigure {
 }
 
 /**
- * Represents a money supply option
+ * Represents a budget target preset
  */
-export interface MoneySupplyOption {
+export interface BudgetTargetOption {
     id: string;
     name: string;
     value: number;
     description?: string;
 }
+
+/** @deprecated Use BudgetTargetOption instead */
+export type MoneySupplyOption = BudgetTargetOption;
 
 /**
  * Props for the MoneyField component
@@ -77,9 +80,9 @@ export interface PayingPopulationProps {
 }
 
 /**
- * Props for the MoneySupply component
+ * Props for the BudgetTarget component
  */
-export interface MoneySupplyProps {
+export interface BudgetTargetProps {
     val: number;
     onValueChange?: (newValue: number) => void;
 }
@@ -99,7 +102,7 @@ export interface TaxBracketProps {
  */
 export interface TaxDistributionChartProps {
     brackets: TaxBracketData[];
-    moneySupply: number;
+    budgetTarget: number;
 }
 
 /**
@@ -120,11 +123,15 @@ export interface HoldingsTaxComparisonChartProps {
  * Full persisted state of the calculator
  */
 export interface PersistedState {
+    buildNumber?: number;
     population: number;
-    moneySupply: number;
+    budgetTarget: number;
+    /** @deprecated — migrated to budgetTarget; kept for reading old saved data */
+    moneySupply?: number;
     levyTypeDefs: LevyTypeDefinition[];
     brackets: TaxBracketData[];
 }
+
 
 /**
  * A named saved scenario
@@ -142,7 +149,7 @@ export interface SavedScenario extends PersistedState {
  */
 export interface ScenarioManagerProps {
     population: number;
-    moneySupply: number;
+    budgetTarget: number;
     levyTypeDefs: LevyTypeDefinition[];
     brackets: TaxBracketData[];
     totalTaxRevenue: number;

@@ -32,14 +32,14 @@ export const calculatePerCapitaTax = (totalTax: number, population: number): num
 };
 
 /**
- * Calculates tax burden as percentage of money supply
+ * Calculates tax revenue as a percentage of the budget target
  * @param totalTax - Total tax revenue
- * @param moneySupply - Total money supply
- * @returns Percentage of money supply
+ * @param budgetTarget - The spending target to measure coverage against
+ * @returns Percentage of budget target covered
  */
-export const calculateTaxPercentage = (totalTax: number, moneySupply: number): number => {
-    if (moneySupply <= 0) return 0;
-    return (totalTax / moneySupply) * 100;
+export const calculateTaxPercentage = (totalTax: number, budgetTarget: number): number => {
+    if (budgetTarget <= 0) return 0;
+    return (totalTax / budgetTarget) * 100;
 };
 
 /**

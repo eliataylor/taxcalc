@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import CalculateIcon from '@mui/icons-material/Calculate';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -69,7 +70,7 @@ const HomePage: React.FC = () => {
                     a simpler question could do most of the work: <em>how much do you have?</em>
                 </Typography>
 
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mb: 3 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mb: 2 }}>
                     <Button
                         component={RouterLink}
                         to="/calculator"
@@ -78,8 +79,20 @@ const HomePage: React.FC = () => {
                         startIcon={<CalculateIcon />}
                         sx={{ textTransform: 'none' }}
                     >
-                        Try the Calculator
+                        Explore Tax Brackets
                     </Button>
+                    <Button
+                        component={RouterLink}
+                        to="/calculator?view=edit"
+                        variant="contained"
+                        size="large"
+                        startIcon={<EditNoteIcon />}
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Create Tax Brackets
+                    </Button>
+                </Stack>
+                <Stack direction="row" justifyContent="center" sx={{ mb: 3 }}>
                     <Button
                         component={RouterLink}
                         to="/variables"
@@ -144,8 +157,10 @@ const HomePage: React.FC = () => {
             </Typography>
             <Typography variant="body1" sx={{ mb: 1 }}>
                 The central question is deceptively simple: <em>what counts?</em> Our working
-                definition is <strong>Net Worth = Assets &minus; Debts</strong>, applied to individuals.
-                Each side is broken into categories that can be taxed or deducted at independent rates.
+                definition is <strong>Net Worth = Assets &minus; Debts</strong>, applied to every
+                individual &mdash; including minors, who would file through a legal guardian. This prevents
+                hiding wealth in non-filing relatives. Each side is broken into categories that can be
+                taxed or deducted at independent rates.
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 These categories are starting points &mdash; you can add, remove, or adjust them in the calculator.
@@ -251,7 +266,7 @@ const HomePage: React.FC = () => {
                 <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
                     <ListItemText
                         primary="Banks and Corporations"
-                        secondary="Should entities be taxed on net worth too, or only individuals? Corporate balance sheets are structured very differently from personal ones."
+                        secondary="How should entities be taxed on net worth too, or only individuals? Corporate balance sheets are structured very differently from personal ones."
                     />
                 </ListItem>
                 <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
@@ -263,13 +278,13 @@ const HomePage: React.FC = () => {
                 <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
                     <ListItemText
                         primary="Enforcement and Privacy"
-                        secondary="A net worth tax requires knowing what people own. How do you balance enforcement with civil liberties? Could zero-knowledge proofs or privacy-preserving audits help?"
+                        secondary="A net worth tax requires knowing what people own. How do you balance enforcement with civil liberties? Could zero-knowledge proofs or privacy-preserving audits help? This is even harder for offshore assets."
                     />
                 </ListItem>
                 <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
                     <ListItemText
-                        primary="Capital Flight"
-                        secondary="If only one country does this, wealth may simply leave. Is this viable without international coordination?"
+                        primary="Asset Transfers"
+                        secondary="Universal individual filing closes the simplest loophole &mdash; gifting assets to relatives to lower your bracket. But what about transfers to non-relatives, shell entities, or foreign nationals?"
                     />
                 </ListItem>
             </List>

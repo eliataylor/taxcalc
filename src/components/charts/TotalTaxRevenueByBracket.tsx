@@ -70,7 +70,7 @@ const TotalTaxRevenueByBracket: React.FC<TaxDistributionChartProps> = ({brackets
                 fill="white"
                 textAnchor={x > cx ? 'start' : 'end'}
                 dominantBaseline="central"
-                fontSize="12"
+                fontSize="10"
                 fontWeight="bold"
             >
                 {`${payload.percent}%`}
@@ -86,27 +86,45 @@ const TotalTaxRevenueByBracket: React.FC<TaxDistributionChartProps> = ({brackets
             <ul style={{
                 display: 'flex',
                 flexDirection: 'column',
-                margin:'auto', 
-                listStyle: 'none'
+                margin: '0 auto',
+                padding: 0,
+                listStyle: 'none',
+                gap: 2,
             }}>
-                <li>
-                    <u>Total Tax Revenues by Brackets</u>
+                <li style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: '#888',
+                    letterSpacing: 0.5,
+                    marginBottom: 4,
+                }}>
+                    Total Tax Revenue by Bracket
                 </li>
                 {payload.map((entry: any, index: number) => (
                     <li key={`item-${index}`} style={{
-                        display: 'block',
+                        display: 'flex',
                         alignItems: 'center',
-                        margin: '0 5px 5px 0'
+                        lineHeight: 1.4,
                     }}>
                         <span style={{
                             display: 'inline-block',
-                            width: 10,
-                            height: 10,
+                            width: 8,
+                            height: 8,
+                            borderRadius: 2,
                             backgroundColor: entry.color,
-                            marginRight: 5
+                            marginRight: 6,
+                            flexShrink: 0,
                         }}/>
-                        <span>
-                            {entry.value}: {formatMoney(entry.payload.value, {notation: 'compact'})} ({entry.payload.percent}%)
+                        <span style={{
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: entry.color,
+                            marginRight: 4,
+                        }}>
+                            {entry.value}
+                        </span>
+                        <span style={{fontSize: 10, color: '#999'}}>
+                            {formatMoney(entry.payload.value, {notation: 'compact'})} ({entry.payload.percent}%)
                         </span>
                     </li>
                 ))}

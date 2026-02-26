@@ -23,7 +23,7 @@ import {PersistedState, SavedScenario, ScenarioManagerProps} from '../../types';
 
 const ScenarioManager: React.FC<ScenarioManagerProps> = ({
     population,
-    moneySupply,
+    budgetTarget,
     levyTypeDefs,
     brackets,
     totalTaxRevenue,
@@ -74,7 +74,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
                 name: scenarioName.trim() || `Export ${new Date().toLocaleDateString()}`,
                 date: new Date().toISOString(),
                 population,
-                moneySupply,
+                budgetTarget,
                 levyTypeDefs,
                 brackets,
                 totalTaxRevenue,
@@ -100,8 +100,11 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
             if (!data.brackets || !Array.isArray(data.brackets)) {
                 throw new Error('Invalid scenario: missing brackets array');
             }
-            if (typeof data.population !== 'number' || typeof data.moneySupply !== 'number') {
-                throw new Error('Invalid scenario: population or moneySupply is not a number');
+            if (typeof data.population !== 'number') {
+                throw new Error('Invalid scenario: population is not a number');
+            }
+            if (typeof data.budgetTarget !== 'number' && typeof data.moneySupply !== 'number') {
+                throw new Error('Invalid scenario: budgetTarget is not a number');
             }
 
             onLoad(data);

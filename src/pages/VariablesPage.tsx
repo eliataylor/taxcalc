@@ -12,13 +12,14 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useLocation} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {LevyTypeDefinition, PersistedState, TaxBracketData} from '../types';
 import {
+    BUDGET_TARGETS,
     CENSUS_FIGURES,
     DEFAULT_LEVY_TYPES,
-    MONEY_SUPPLY_TYPES,
+    MONEY_SUPPLY_REFS,
 } from '../data/definitions.ts';
 import {calculateBracketTax, calculateNetWorth} from '../utils/calculations.ts';
 import {formatMoney, formatPercentage, formatPopulation} from '../utils/formatters.ts';
@@ -36,10 +37,24 @@ function readPersistedState(): PersistedState | null {
 
 const VariablesPage: React.FC = () => {
     const [userState, setUserState] = useState<PersistedState | null>(null);
+    const location = useLocation();
 
     useEffect(() => {
         setUserState(readPersistedState());
     }, []);
+
+    useEffect(() => {
+        if (location.hash) {
+            const el = document.getElementById(location.hash.slice(1));
+            if (el) {
+                el.scrollIntoView({behavior: 'smooth', block: 'center'});
+                el.style.transition = 'background-color 0.4s';
+                el.style.backgroundColor = 'rgba(25,118,210,0.15)';
+                const timeout = setTimeout(() => { el.style.backgroundColor = ''; }, 2500);
+                return () => clearTimeout(timeout);
+            }
+        }
+    }, [location.hash]);
 
     const userLevyDefs: LevyTypeDefinition[] = userState?.levyTypeDefs ?? [];
     const userBrackets: TaxBracketData[] = userState?.brackets ?? [];
@@ -93,26 +108,52 @@ const VariablesPage: React.FC = () => {
                 </Table>
             </TableContainer>
 
-            {/* Section 2: Global Inputs - Money Supply */}
-            <Typography variant="h6" sx={{mb: 1}}>Money Supply / Revenue Target Options</Typography>
+            {/* Section 2: Budget Target Options */}
+            <Typography variant="h6" sx={{mb: 1}}>Budget Target Options</Typography>
             <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                The reference figure used to evaluate whether total tax revenue is sufficient. Total revenue is shown as a percentage of this value.
+                The spending goal used to evaluate whether total tax revenue is sufficient. Total revenue is shown as a percentage of this target. Users can also enter a custom dollar amount.
             </Typography>
             <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell><strong>Name</strong></TableCell>
+                            <TableCell><strong>Preset</strong></TableCell>
                             <TableCell align="right"><strong>Value</strong></TableCell>
                             <TableCell><strong>Description</strong></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {MONEY_SUPPLY_TYPES.map(ms => (
-                            <TableRow key={ms.id}>
-                                <TableCell>{ms.name}</TableCell>
-                                <TableCell align="right">${formatPopulation(ms.value)}</TableCell>
-                                <TableCell>{ms.description}</TableCell>
+                        {BUDGET_TARGETS.map(bt => (
+                            <TableRow key={bt.id}>
+                                <TableCell>{bt.name}</TableCell>
+                                <TableCell align="right">${formatPopulation(bt.value)}</TableCell>
+                                <TableCell>{bt.description}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {/* Section 2b: Money Supply Reference Figures */}
+            <Typography variant="h6" sx={{mb: 1}}>Money Supply Reference Figures</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+                These are not budget targets but provide economic context — what fraction of circulating money would this tax capture?
+            </Typography>
+            <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><strong>Measure</strong></TableCell>
+                            <TableCell align="right"><strong>Value</strong></TableCell>
+                            <TableCell><strong>Description</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.entries(MONEY_SUPPLY_REFS).map(([key, ref]) => (
+                            <TableRow key={key}>
+                                <TableCell>{ref.name}</TableCell>
+                                <TableCell align="right">${formatPopulation(ref.value)}</TableCell>
+                                <TableCell>{ref.description}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -139,7 +180,7 @@ const VariablesPage: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {DEFAULT_LEVY_TYPES.map(lt => (
-                            <TableRow key={lt.key}>
+                            <TableRow key={lt.key} id={`levy-${lt.key}`}>
                                 <TableCell>
                                     <Typography variant="caption" color={lt.category === 'debt' ? 'warning.main' : 'success.main'} sx={{textTransform: 'uppercase', fontWeight: 600}}>
                                         {lt.category}
@@ -229,8 +270,8 @@ const VariablesPage: React.FC = () => {
                             <TableCell><code>sum(bracketTax)</code> across all brackets</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Tax as % of Money Supply</TableCell>
-                            <TableCell><code>(totalTaxRevenue / moneySupply) * 100</code></TableCell>
+                            <TableCell>Coverage (% of Budget Target)</TableCell>
+                            <TableCell><code>(totalTaxRevenue / budgetTarget) * 100</code></TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -267,7 +308,7 @@ const VariablesPage: React.FC = () => {
                                     </TableHead>
                                     <TableBody>
                                         {userLevyDefs.map(lt => (
-                                            <TableRow key={lt.key}>
+                                            <TableRow key={lt.key} id={`levy-${lt.key}`}>
                                                 <TableCell>
                                                     <Typography variant="caption" color={lt.category === 'debt' ? 'warning.main' : 'success.main'} sx={{textTransform: 'uppercase', fontWeight: 600}}>
                                                         {lt.category}
@@ -288,7 +329,7 @@ const VariablesPage: React.FC = () => {
                     {/* Condensed bracket summary */}
                     <Typography variant="subtitle1" sx={{mb: 1}}>Bracket Summary</Typography>
                     <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                        Population: {formatPopulation(userState.population)} · Money Supply: ${formatPopulation(userState.moneySupply)}
+                        Population: {formatPopulation(userState.population)} · Budget Target: ${formatPopulation(userState.budgetTarget ?? userState.moneySupply ?? 0)}
                     </Typography>
                     <TableContainer component={Paper} variant="outlined" sx={{mb: 3}}>
                         <Table size="small">

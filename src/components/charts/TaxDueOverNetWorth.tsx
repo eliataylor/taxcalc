@@ -8,7 +8,7 @@ import {formatMoney} from '../../utils/formatters.ts';
 /**
  * Bar chart showing tax due as percentage of net worth by bracket
  */
-const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, moneySupply}) => {
+const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, budgetTarget}) => {
 
     const data = useMemo(() => {
         return brackets.map((bracket) => {
@@ -26,7 +26,7 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, mone
                 totalTax: taxAmount
             };
         });
-    }, [brackets, moneySupply]);
+    }, [brackets, budgetTarget]);
 
     // Custom tooltip for the bar chart
     const CustomTooltip = ({active, payload}: any) => {
@@ -61,32 +61,55 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, mone
         );
     }
 
+    const renderColoredTick = (props: any) => {
+        const {x, y, payload} = props;
+        const entry = data.find(d => d.name === payload.value);
+        return (
+            <text
+                x={x - 4}
+                y={y}
+                textAnchor="end"
+                dominantBaseline="central"
+                fontSize={11}
+                fontWeight={600}
+                fill={entry?.color ?? '#666'}
+            >
+                {payload.value}
+            </text>
+        );
+    };
+
     return (
         <Box sx={{width: '100%'}}>
-            <Typography variant={'subtitle2'}><u>Percentage of Net Worth Taxed</u></Typography>
+            <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{letterSpacing: 0.5}}>
+                Percentage of Net Worth Taxed
+            </Typography>
             <ResponsiveContainer width="100%" height={250}>
                 <BarChart
                     data={data}
                     layout="vertical"
+                    margin={{left: 10, right: 10, top: 8, bottom: 16}}
                 >
                     <CartesianGrid strokeDasharray="3 3" opacity={.3}/>
                     <XAxis
                         type="number"
                         tickFormatter={(value) => `${value.toFixed(2)}%`}
                         domain={[0, 'dataMax']}
-                        label={{value: 'Percentage of Net Worth', position: 'bottom', offset: 10}}
+                        tick={{fontSize: 10}}
+                        label={{value: '% of Net Worth', position: 'bottom', offset: 0, style: {fontSize: 10, fill: '#888'}}}
                     />
                     <YAxis
                         type="category"
                         dataKey="name"
-                        width={100}
+                        width={95}
+                        tick={renderColoredTick}
                     />
                     <Tooltip content={<CustomTooltip/>}/>
                     <Bar
                         dataKey="value"
                         name="Tax as % of Net Worth"
                         fill="#8884d8"
-                        barSize={20}
+                        barSize={18}
                     >
                         {data.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color}/>

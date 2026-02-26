@@ -4,23 +4,30 @@ import {
     Box,
     Button,
     Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Grid,
+    IconButton,
     Paper,
-    TextField,
     ToggleButton,
     ToggleButtonGroup,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ViewListIcon from '@mui/icons-material/ViewList';
+import HomeIcon from '@mui/icons-material/Home';
 import {v4 as uuidv4} from 'uuid';
 import AddIcon from '@mui/icons-material/Add';
-import {useSearchParams} from 'react-router-dom';
+import {Link as RouterLink, useSearchParams} from 'react-router-dom';
 
 import PayingPopulation from './inputs/PayingPopulation';
-import MoneySupply from './inputs/MoneySupply';
-import TaxBracket from './tax/TaxBracket';
+import BudgetTarget from './inputs/BudgetTarget';
+import LevyTypeEditor from './inputs/LevyTypeEditor';
+// import TaxBracket from './tax/TaxBracket';
 import TaxBracketCondensed from './tax/TaxBracketCondensed.tsx';
 import ScenarioManager from './tax/ScenarioManager.tsx';
 import TotalTaxRevenueByBracket from './charts/TotalTaxRevenueByBracket';
@@ -28,14 +35,14 @@ import TaxDueOverNetWorth from './charts/TaxDueOverNetWorth';
 
 import {LevyTypeDefinition, TaxBracketData} from '../types';
 import {
+    calculateBracketTax,
     calculatePopulationBalance,
     calculateTaxPercentage,
     calculateTotalTax,
     updateBracketTaxes,
 } from '../utils/calculations.ts';
-import {formatPopulation} from '../utils/formatters.ts';
+import {formatMoney, formatPopulation} from '../utils/formatters.ts';
 import {usePersistedState} from '../hooks/usePersistedState';
-import {MONEY_SUPPLY_TYPES} from '../data/definitions.ts';
 
 // const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#A4DE6C']
 /**
@@ -44,38 +51,40 @@ import {MONEY_SUPPLY_TYPES} from '../data/definitions.ts';
 const Calculator: React.FC = () => {
     const {
         population,
-        moneySupply,
+        budgetTarget,
         levyTypeDefs,
         brackets,
         setPopulation,
-        setMoneySupply,
+        setBudgetTarget,
         setLevyTypeDefs,
         setBrackets,
         saveScenario,
         loadScenario,
         deleteScenario,
         resetToDefaults,
+        dismissStale,
         scenarios,
         isLoading,
+        isStale,
     } = usePersistedState();
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const viewMode = searchParams.get('view') === 'condensed' ? 'condensed' : 'edit';
+    const viewMode = searchParams.get('view') === 'edit' ? 'edit' : 'condensed';
 
     const setViewMode = useCallback((mode: 'edit' | 'condensed') => {
         setSearchParams(prev => {
             const next = new URLSearchParams(prev);
             if (mode === 'edit') {
-                next.delete('view');
+                next.set('view', 'edit');
             } else {
-                next.set('view', mode);
+                next.delete('view');
             }
             return next;
         }, {replace: true});
     }, [setSearchParams]);
 
-    const [newLevyName, setNewLevyName] = useState('');
-    const [newLevyCategory, setNewLevyCategory] = useState<'asset' | 'debt'>('asset');
+    const [levyEditorOpen, setLevyEditorOpen] = useState(false);
+    const [editingLevyDef, setEditingLevyDef] = useState<LevyTypeDefinition | null>(null);
 
     const computedBrackets = useMemo(() => updateBracketTaxes(brackets), [brackets]);
     const totalTaxRevenue = useMemo(() => calculateTotalTax(computedBrackets), [computedBrackets]);
@@ -84,8 +93,8 @@ const Calculator: React.FC = () => {
         [population, computedBrackets],
     );
     const taxBalancePercentage = useMemo(
-        () => calculateTaxPercentage(totalTaxRevenue, moneySupply),
-        [totalTaxRevenue, moneySupply],
+        () => calculateTaxPercentage(totalTaxRevenue, budgetTarget),
+        [totalTaxRevenue, budgetTarget],
     );
 
     const handleBracketChange = (id: string, changes: Partial<TaxBracketData>) => {
@@ -115,26 +124,18 @@ const Calculator: React.FC = () => {
         setBrackets(brackets.filter(bracket => bracket.id !== id));
     };
 
-    const addLevyType = () => {
-        const trimmed = newLevyName.trim();
-        if (!trimmed) return;
-        const key = trimmed.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-        if (levyTypeDefs.some(d => d.key === key)) return;
-
-        const newDef: LevyTypeDefinition = {
-            key,
-            name: trimmed,
-            description: '',
-            defaultRate: 0.05,
-            category: newLevyCategory,
-        };
-        setLevyTypeDefs([...levyTypeDefs, newDef]);
-        setBrackets(brackets.map(bracket => ({
-            ...bracket,
-            levyTypes: [...bracket.levyTypes, {key, category: newLevyCategory, dollars: 0, taxRate: newDef.defaultRate}],
-        })));
-        setNewLevyName('');
-        setNewLevyCategory('asset');
+    const saveLevyType = (def: LevyTypeDefinition) => {
+        const existingIndex = levyTypeDefs.findIndex(d => d.key === def.key);
+        if (existingIndex >= 0) {
+            setLevyTypeDefs(levyTypeDefs.map(d => d.key === def.key ? def : d));
+        } else {
+            setLevyTypeDefs([...levyTypeDefs, def]);
+            setBrackets(brackets.map(bracket => ({
+                ...bracket,
+                levyTypes: [...bracket.levyTypes, {key: def.key, category: def.category, dollars: 0, taxRate: def.defaultRate}],
+            })));
+        }
+        setEditingLevyDef(null);
     };
 
     const removeLevyType = (key: string) => {
@@ -155,12 +156,62 @@ const Calculator: React.FC = () => {
 
     return (
         <Box width={'100%'}>
-            <Grid container p={1} justifyContent={'space-between'}>
-                <Grid>
-                    <Typography variant="subtitle1">
-                    </Typography>
-                </Grid>
-            </Grid>
+            {/* ── Consolidated header bar ── */}
+            <Paper
+                elevation={1}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1,
+                    px: 2,
+                    py: 1,
+                    mb: 1,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 'appBar',
+                    borderRadius: 0,
+                }}
+            >
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                    <Tooltip title="Back to Home">
+                        <IconButton component={RouterLink} to="/" size="small">
+                            <HomeIcon />
+                        </IconButton>
+                    </Tooltip>
+
+                    <ScenarioManager
+                        population={population}
+                        budgetTarget={budgetTarget}
+                        levyTypeDefs={levyTypeDefs}
+                        brackets={computedBrackets}
+                        totalTaxRevenue={totalTaxRevenue}
+                        taxBalancePercentage={taxBalancePercentage}
+                        scenarios={scenarios}
+                        onSave={name => saveScenario(name, totalTaxRevenue, taxBalancePercentage)}
+                        onLoad={loadScenario}
+                        onDelete={deleteScenario}
+                        onReset={resetToDefaults}
+                    />
+                </Box>
+
+                <ToggleButtonGroup
+                    value={viewMode}
+                    exclusive
+                    onChange={(_e, val) => val && setViewMode(val)}
+                    size="small"
+                >
+                    <ToggleButton value="edit">
+                        <EditIcon sx={{fontSize: 18, mr: 0.5}}/>
+                        Edit
+                    </ToggleButton>
+                    <ToggleButton value="condensed">
+                        <ViewListIcon sx={{fontSize: 18, mr: 0.5}}/>
+                        Summary
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </Paper>
 
             <Grid container spacing={1}>
                 {/* Left column - Global settings */}
@@ -168,144 +219,165 @@ const Calculator: React.FC = () => {
                 sx={{padding:1.5}}
                      size={{xs: 12, md: 4}} gap={2} style={{position: 'relative'}}>
 
-                        <Grid container mb={4} spacing={1} gap={2} justifyContent={'space-between'}>
-                            <ScenarioManager
-                                population={population}
-                                moneySupply={moneySupply}
-                                levyTypeDefs={levyTypeDefs}
-                                brackets={computedBrackets}
-                                totalTaxRevenue={totalTaxRevenue}
-                                taxBalancePercentage={taxBalancePercentage}
-                                scenarios={scenarios}
-                                onSave={name => saveScenario(name, totalTaxRevenue, taxBalancePercentage)}
-                                onLoad={loadScenario}
-                                onDelete={deleteScenario}
-                                onReset={resetToDefaults}
-                            />
-                        </Grid>
-
-                        <Grid sx={{mb: 3}}>
+                        {/* Inputs */}
+                        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
                             <PayingPopulation
                                 val={population}
                                 onValueChange={setPopulation}
                             />
-                        </Grid>
-
-                        <Divider sx={{my: 3}}/>
-
-                        <Grid>
-                            <MoneySupply
-                                val={moneySupply}
-                                onValueChange={setMoneySupply}
+                            <BudgetTarget
+                                val={budgetTarget}
+                                onValueChange={setBudgetTarget}
                             />
-                        </Grid>
+                        </Box>
 
-                        <Divider sx={{my: 3}}/>
+                        <Divider sx={{my: 1}} />
 
-                        <Grid sx={{mb: 2}}>
-                            <Typography variant="subtitle2">Total Tax Revenue:</Typography>
-                            {(() => {
-                                const ref = MONEY_SUPPLY_TYPES.find(m => m.value === moneySupply);
-                                const refName = ref?.name ?? 'reference';
-                                const isAnnualFlow = ['federal_budget', 'tax_revenue', 'discretionary'].includes(ref?.id ?? '');
-                                const pct = taxBalancePercentage;
-                                let color: string;
-                                if (isAnnualFlow) {
-                                    color = pct > 100 ? 'red' : pct >= 60 ? 'green' : 'orange';
-                                } else {
-                                    color = pct > 50 ? 'red' : pct > 15 ? 'orange' : 'green';
-                                }
-                                return (
-                                    <Typography color={color}>
-                                        ${formatPopulation(totalTaxRevenue)} ({pct.toFixed(2)}% of {refName})
-                                    </Typography>
-                                );
-                            })()}
-                        </Grid>
+                        {/* Results: bracket sums → total → coverage equation */}
+                        {(() => {
+                            const pct = taxBalancePercentage;
+                            const color = pct > 100 ? 'red' : pct >= 60 ? 'green' : 'orange';
+                            return (
+                                <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+                                    {/* Bracket sums mini-table */}
+                                    <Box sx={{px: 0.5}}>
+                                        <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{letterSpacing: 0.5}}>
+                                            REVENUE BY BRACKET
+                                        </Typography>
+                                        {computedBrackets.map((b) => {
+                                            const tax = calculateBracketTax(b);
+                                            return (
+                                                <Box key={b.id} sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    py: 0.25,
+                                                }}>
+                                                    <Typography variant="caption" sx={{color: b.color, fontWeight: 600}}>
+                                                        {b.name}
+                                                    </Typography>
+                                                    <Typography variant="caption" sx={{fontFamily: 'monospace', fontWeight: 500}}>
+                                                        {formatMoney(tax, {notation: 'compact'})}
+                                                    </Typography>
+                                                </Box>
+                                            );
+                                        })}
+
+                                        {/* Total row */}
+                                        <Box sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            borderTop: 1,
+                                            borderColor: 'divider',
+                                            mt: 0.5,
+                                            pt: 0.5,
+                                        }}>
+                                            <Typography variant="caption" fontWeight={700}>
+                                                Total
+                                            </Typography>
+                                            <Typography variant="caption" sx={{fontFamily: 'monospace', fontWeight: 700}}>
+                                                {formatMoney(totalTaxRevenue, {notation: 'compact'})}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Equation: revenue ÷ target = % */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 1,
+                                        py: 1,
+                                        px: 1.5,
+                                        borderRadius: 1,
+                                        bgcolor: 'action.hover',
+                                    }}>
+                                        <Box sx={{textAlign: 'center'}}>
+                                            <Typography variant="body2" fontWeight={600}>
+                                                {formatMoney(totalTaxRevenue, {notation: 'compact'})}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" sx={{lineHeight: 1}}>
+                                                revenue
+                                            </Typography>
+                                        </Box>
+                                        <Typography variant="body1" color="text.disabled">÷</Typography>
+                                        <Box sx={{textAlign: 'center'}}>
+                                            <Typography variant="body2" fontWeight={600}>
+                                                {formatMoney(budgetTarget, {notation: 'compact'})}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" sx={{lineHeight: 1}}>
+                                                target
+                                            </Typography>
+                                        </Box>
+                                        <Typography variant="body1" color="text.disabled">=</Typography>
+                                        <Box sx={{textAlign: 'center'}}>
+                                            <Typography variant="body2" fontWeight={700} color={color}>
+                                                {pct.toFixed(2)}%
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" sx={{lineHeight: 1}}>
+                                                coverage
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            );
+                        })()}
 
                         <Grid sx={{pt: 3}}>
-                            <TotalTaxRevenueByBracket moneySupply={moneySupply}
+                            <TotalTaxRevenueByBracket budgetTarget={budgetTarget}
                                                       brackets={computedBrackets}/>
                         </Grid>
 
                         <Grid>
-                            <TaxDueOverNetWorth moneySupply={moneySupply}
+                            <TaxDueOverNetWorth budgetTarget={budgetTarget}
                                                 brackets={computedBrackets}/>
                         </Grid>
                 </Grid>
 
                 {/* Right column - Tax brackets and results */}
                 <Grid size={{xs: 12, md: 8}}>
-                    {/* View toggle + header */}
-                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, px: 1}}>
-                        <Typography variant="h5">Tax Brackets</Typography>
-                        <ToggleButtonGroup
-                            value={viewMode}
-                            exclusive
-                            onChange={(_e, val) => val && setViewMode(val)}
-                            size="small"
-                        >
-                            <ToggleButton value="edit">
-                                <EditIcon sx={{fontSize: 18, mr: 0.5}}/>
-                                Edit
-                            </ToggleButton>
-                            <ToggleButton value="condensed">
-                                <ViewListIcon sx={{fontSize: 18, mr: 0.5}}/>
-                                Summary
-                            </ToggleButton>
-                        </ToggleButtonGroup>
-                    </Box>
 
                     {viewMode === 'edit' && (
                         <>
                             {/* Levy type management */}
                             <Paper sx={{p: 2, mb: 2}}>
-                                <Typography variant="subtitle2" sx={{mb: 1}}>
-                                    Net Worth Components (Levy Types)
-                                </Typography>
-                                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1}}>
+                                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
+                                    <Typography variant="subtitle2">
+                                        Net Worth Components (Levy Types)
+                                    </Typography>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        startIcon={<AddIcon/>}
+                                        onClick={() => { setEditingLevyDef(null); setLevyEditorOpen(true); }}
+                                    >
+                                        Add
+                                    </Button>
+                                </Box>
+                                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
                                     {levyTypeDefs.map(def => (
                                         <Chip
                                             key={def.key}
                                             label={def.name}
                                             color={def.category === 'debt' ? 'warning' : 'default'}
                                             variant={def.category === 'debt' ? 'outlined' : 'filled'}
+                                            onClick={() => { setEditingLevyDef(def); setLevyEditorOpen(true); }}
                                             onDelete={() => removeLevyType(def.key)}
                                             size="small"
                                         />
                                     ))}
                                 </Box>
-                                <Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
-                                    <TextField
-                                        size="small"
-                                        placeholder="New levy type name"
-                                        value={newLevyName}
-                                        onChange={e => setNewLevyName(e.target.value)}
-                                        onKeyDown={e => e.key === 'Enter' && addLevyType()}
-                                    />
-                                    <ToggleButtonGroup
-                                        value={newLevyCategory}
-                                        exclusive
-                                        onChange={(_e, val) => val && setNewLevyCategory(val)}
-                                        size="small"
-                                    >
-                                        <ToggleButton value="asset">Asset</ToggleButton>
-                                        <ToggleButton value="debt">Debt</ToggleButton>
-                                    </ToggleButtonGroup>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        startIcon={<AddIcon/>}
-                                        onClick={addLevyType}
-                                        disabled={!newLevyName.trim()}
-                                    >
-                                        Add
-                                    </Button>
-                                </Box>
                             </Paper>
+                            <LevyTypeEditor
+                                open={levyEditorOpen}
+                                onClose={() => setLevyEditorOpen(false)}
+                                onSave={saveLevyType}
+                                existing={editingLevyDef}
+                            />
 
-                            <Paper sx={{p: 1, mb: 3}}>
-                                <Box sx={{display: 'flex', justifyContent: 'flex-end', mb: 2}}>
+                            <Paper sx={{p: 2, mb: 3}}>
+                                <Box sx={{display: 'flex', justifyContent: 'flex-end', mb: 1}}>
                                     <Button
                                         variant="contained"
                                         color="primary"
@@ -328,19 +400,19 @@ const Calculator: React.FC = () => {
                                 )}
 
                                 {computedBrackets.map(bracket => (
-                                    <Box key={bracket.id} sx={{mb: 2}}>
-                                        <TaxBracket
+                                    <Box key={bracket.id} sx={{position: 'relative'}}>
+                                        <TaxBracketCondensed
                                             bracket={bracket}
                                             totalPopulation={population}
                                             levyTypeDefs={levyTypeDefs}
                                             onChange={handleBracketChange}
                                         />
                                         <Button
-                                            variant="outlined"
+                                            variant="text"
                                             color="error"
                                             size="small"
                                             onClick={() => removeBracket(bracket.id)}
-                                            sx={{mt: -3}}
+                                            sx={{position: 'absolute', top: 4, right: 4, minWidth: 0, fontSize: 11}}
                                         >
                                             Remove
                                         </Button>
@@ -351,7 +423,7 @@ const Calculator: React.FC = () => {
                     )}
 
                     {viewMode === 'condensed' && (
-                        <Paper sx={{p: 2, mb: 3}}>
+                        <Box sx={{p: 2, mb: 3}}>
                             {populationBalance !== 0 && (
                                 <Alert
                                     severity={populationBalance < 0 ? 'error' : 'warning'}
@@ -390,10 +462,31 @@ const Calculator: React.FC = () => {
                                     </Typography>
                                 </Box>
                             )}
-                        </Paper>
+                        </Box>
                     )}
                 </Grid>
             </Grid>
+
+            <Dialog open={isStale} onClose={dismissStale} maxWidth="sm" fullWidth>
+                <DialogTitle>Default Variables Updated</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1" sx={{mb: 1}}>
+                        The default tax categories and rates have been updated since your last session.
+                        You can reset to the latest defaults or keep your current configuration.
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Your saved scenarios are not affected.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={dismissStale}>
+                        Keep My Settings
+                    </Button>
+                    <Button onClick={resetToDefaults} variant="contained" color="primary">
+                        Reset to Defaults
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

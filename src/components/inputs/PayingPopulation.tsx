@@ -28,12 +28,12 @@ const PayingPopulation: React.FC<PayingPopulationProps> = ({val, onValueChange})
             value={selectedFigure.id}
             onChange={handleChange}
             fullWidth
-            helperText={formatPopulation(selectedFigure.value)}
+            helperText={CENSUS_FIGURES.find(fig => fig.id === selectedFigure.id)?.description}
         >
             {CENSUS_FIGURES.map(figure => (
                 <MenuItem key={figure.id} value={figure.id}>
                     <Box sx={{display: 'flex', alignItems: 'center', gap: 0.5, width: '100%'}}>
-                        {figure.name} ({formatPopulation(figure.value)})
+                        {figure.name} <small>({formatPopulation(figure.value)})</small>
                         {figure.description && (
                             <Tooltip title={figure.description} placement="right" arrow>
                                 <InfoOutlinedIcon sx={{fontSize: 14, color: 'text.disabled', ml: 'auto', cursor: 'help'}}/>

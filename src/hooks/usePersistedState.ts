@@ -3,14 +3,15 @@ import {v4 as uuidv4} from 'uuid';
 import {LevyTypeDefinition, PersistedState, SavedScenario, TaxBracketData} from '../types';
 import {
     DEFAULT_BRACKETS,
+    DEFAULT_BUDGET_TARGET,
     DEFAULT_LEVY_TYPES,
-    DEFAULT_MONEY_SUPPLY,
     DEFAULT_POPULATION,
 } from '../data/definitions.ts';
 
 const STATE_KEY = 'taxcalc_state';
 const SCENARIOS_KEY = 'taxcalc_scenarios';
 const DEBOUNCE_MS = 300;
+const CURRENT_BUILD = typeof __BUILD_NUMBER__ !== 'undefined' ? Number(__BUILD_NUMBER__) : 0;
 
 function readState(): PersistedState | null {
     try {
@@ -22,7 +23,7 @@ function readState(): PersistedState | null {
 }
 
 function writeState(state: PersistedState): void {
-    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    localStorage.setItem(STATE_KEY, JSON.stringify({...state, buildNumber: CURRENT_BUILD}));
 }
 
 function readScenarios(): SavedScenario[] {
@@ -40,8 +41,9 @@ function writeScenarios(scenarios: SavedScenario[]): void {
 
 export function usePersistedState() {
     const [isLoading, setIsLoading] = useState(true);
+    const [isStale, setIsStale] = useState(false);
     const [population, setPopulationRaw] = useState(DEFAULT_POPULATION);
-    const [moneySupply, setMoneySupplyRaw] = useState(DEFAULT_MONEY_SUPPLY);
+    const [budgetTarget, setBudgetTargetRaw] = useState(DEFAULT_BUDGET_TARGET);
     const [levyTypeDefs, setLevyTypeDefsRaw] = useState<LevyTypeDefinition[]>(DEFAULT_LEVY_TYPES);
     const [brackets, setBracketsRaw] = useState<TaxBracketData[]>(DEFAULT_BRACKETS);
     const [scenarios, setScenarios] = useState<SavedScenario[]>([]);
@@ -55,7 +57,7 @@ export function usePersistedState() {
 
     const stateRef = useRef<PersistedState>({
         population: DEFAULT_POPULATION,
-        moneySupply: DEFAULT_MONEY_SUPPLY,
+        budgetTarget: DEFAULT_BUDGET_TARGET,
         levyTypeDefs: DEFAULT_LEVY_TYPES,
         brackets: DEFAULT_BRACKETS,
     });
@@ -63,13 +65,18 @@ export function usePersistedState() {
     useEffect(() => {
         const saved = readState();
         if (saved) {
+            const storedBuild = saved.buildNumber ?? 0;
+            if (storedBuild < CURRENT_BUILD) {
+                setIsStale(true);
+            }
+            const target = saved.budgetTarget ?? saved.moneySupply ?? DEFAULT_BUDGET_TARGET;
             setPopulationRaw(saved.population);
-            setMoneySupplyRaw(saved.moneySupply);
+            setBudgetTargetRaw(target);
             setLevyTypeDefsRaw(saved.levyTypeDefs ?? DEFAULT_LEVY_TYPES);
             setBracketsRaw(saved.brackets);
             stateRef.current = {
                 population: saved.population,
-                moneySupply: saved.moneySupply,
+                budgetTarget: target,
                 levyTypeDefs: saved.levyTypeDefs ?? DEFAULT_LEVY_TYPES,
                 brackets: saved.brackets,
             };
@@ -84,9 +91,9 @@ export function usePersistedState() {
         scheduleSave(stateRef.current);
     }, [scheduleSave]);
 
-    const setMoneySupply = useCallback((val: number) => {
-        setMoneySupplyRaw(val);
-        stateRef.current = {...stateRef.current, moneySupply: val};
+    const setBudgetTarget = useCallback((val: number) => {
+        setBudgetTargetRaw(val);
+        stateRef.current = {...stateRef.current, budgetTarget: val};
         scheduleSave(stateRef.current);
     }, [scheduleSave]);
 
@@ -117,13 +124,14 @@ export function usePersistedState() {
     }, []);
 
     const loadScenario = useCallback((data: PersistedState) => {
+        const target = data.budgetTarget ?? data.moneySupply ?? DEFAULT_BUDGET_TARGET;
         setPopulationRaw(data.population);
-        setMoneySupplyRaw(data.moneySupply);
+        setBudgetTargetRaw(target);
         setLevyTypeDefsRaw(data.levyTypeDefs ?? DEFAULT_LEVY_TYPES);
         setBracketsRaw(data.brackets);
         stateRef.current = {
             population: data.population,
-            moneySupply: data.moneySupply,
+            budgetTarget: target,
             levyTypeDefs: data.levyTypeDefs ?? DEFAULT_LEVY_TYPES,
             brackets: data.brackets,
         };
@@ -139,27 +147,35 @@ export function usePersistedState() {
     const resetToDefaults = useCallback(() => {
         const defaults: PersistedState = {
             population: DEFAULT_POPULATION,
-            moneySupply: DEFAULT_MONEY_SUPPLY,
+            budgetTarget: DEFAULT_BUDGET_TARGET,
             levyTypeDefs: DEFAULT_LEVY_TYPES,
             brackets: DEFAULT_BRACKETS,
         };
         loadScenario(defaults);
+        setIsStale(false);
     }, [loadScenario]);
+
+    const dismissStale = useCallback(() => {
+        setIsStale(false);
+        scheduleSave(stateRef.current);
+    }, [scheduleSave]);
 
     return {
         population,
-        moneySupply,
+        budgetTarget,
         levyTypeDefs,
         brackets,
         setPopulation,
-        setMoneySupply,
+        setBudgetTarget,
         setLevyTypeDefs,
         setBrackets,
         saveScenario,
         loadScenario,
         deleteScenario,
         resetToDefaults,
+        dismissStale,
         scenarios,
         isLoading,
+        isStale,
     };
 }

@@ -22,10 +22,14 @@ export const formatMoney = (
         minimumFractionDigits = 0
     } = options;
 
+    const effectiveNotation = (notation === 'compact' && Math.abs(value) < 10_000)
+        ? 'standard'
+        : notation;
+
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        notation,
+        notation: effectiveNotation,
         maximumFractionDigits,
         minimumFractionDigits,
     }).format(value);
