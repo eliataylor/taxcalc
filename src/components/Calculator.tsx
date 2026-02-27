@@ -344,7 +344,7 @@ const Calculator: React.FC = () => {
                             <Paper sx={{p: 2, mb: 2}}>
                                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
                                     <Typography variant="subtitle2">
-                                        Net Worth Components (Levy Types)
+                                        Holdings &amp; Debts
                                     </Typography>
                                     <Button
                                         variant="outlined"
@@ -377,16 +377,7 @@ const Calculator: React.FC = () => {
                             />
 
                             <Paper sx={{p: 2, mb: 3}}>
-                                <Box sx={{display: 'flex', justifyContent: 'flex-end', mb: 1}}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size={'small'}
-                                        onClick={addNewBracket}
-                                    >
-                                        Add Bracket
-                                    </Button>
-                                </Box>
+                                
 
                                 {populationBalance !== 0 && (
                                     <Alert
@@ -418,6 +409,17 @@ const Calculator: React.FC = () => {
                                         </Button>
                                     </Box>
                                 ))}
+
+<Box sx={{display: 'flex', justifyContent: 'flex-end', mb: 1}}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size={'small'}
+                                        onClick={addNewBracket}
+                                    >
+                                        Add Bracket
+                                    </Button>
+                                </Box>
                             </Paper>
                         </>
                     )}

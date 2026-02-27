@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
     return (
         <Box
             sx={{
-                maxWidth: 720,
+                maxWidth: 900,
                 mx: 'auto',
                 px: 2,
                 py: 4,
@@ -109,7 +109,7 @@ const HomePage: React.FC = () => {
                     <Card variant="outlined" sx={{ flex: '1 1 200px', minWidth: 0 }}>
                         <CardContent sx={{ '&:last-child': { pb: 2 } }}>
                             <Typography variant="overline" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <ThumbUpIcon fontSize="small" /> What could go right
+                                <ThumbUpIcon fontSize="small" /> PROS
                             </Typography>
                             <List dense disablePadding>
                                 <ListItem sx={{ py: 0, pl: 0 }}>
@@ -120,17 +120,13 @@ const HomePage: React.FC = () => {
                                     <ListItemText primaryTypographyProps={{ variant: 'body2' }}
                                         primary="Eliminates most deductions, credits, and loopholes by design." />
                                 </ListItem>
-                                <ListItem sx={{ py: 0, pl: 0 }}>
-                                    <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                                        primary="Naturally progressive &mdash; those who hold more, contribute more." />
-                                </ListItem>
                             </List>
                         </CardContent>
                     </Card>
                     <Card variant="outlined" sx={{ flex: '1 1 200px', minWidth: 0 }}>
                         <CardContent sx={{ '&:last-child': { pb: 2 } }}>
                             <Typography variant="overline" color="secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <ThumbDownIcon fontSize="small" /> What could go wrong
+                                <ThumbDownIcon fontSize="small" /> CONS
                             </Typography>
                             <List dense disablePadding>
                                 <ListItem sx={{ py: 0, pl: 0 }}>
@@ -140,10 +136,6 @@ const HomePage: React.FC = () => {
                                 <ListItem sx={{ py: 0, pl: 0 }}>
                                     <ListItemText primaryTypographyProps={{ variant: 'body2' }}
                                         primary="Valuing illiquid assets (property, private equity) is hard." />
-                                </ListItem>
-                                <ListItem sx={{ py: 0, pl: 0 }}>
-                                    <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                                        primary="Debt deductions create new avenues for manipulation." />
                                 </ListItem>
                             </List>
                         </CardContent>
@@ -156,11 +148,14 @@ const HomePage: React.FC = () => {
                 <HelpOutlineIcon fontSize="small" /> Defining Net Worth
             </Typography>
             <Typography variant="body1" sx={{ mb: 1 }}>
-                The central question is deceptively simple: <em>what counts?</em> Our working
+                The central question is: <em>how can we simply defined Net Worth as a taxable figure?</em> Our working
                 definition is <strong>Net Worth = Assets &minus; Debts</strong>, applied to every
                 individual &mdash; including minors, who would file through a legal guardian. This prevents
                 hiding wealth in non-filing relatives. Each side is broken into categories that can be
                 taxed or deducted at independent rates.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                If you're already arguing about how this could be enforced or audited, consider that's not much easier with the current tax code. Plus, we do have internet and AI these days.
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 These categories are starting points &mdash; you can add, remove, or adjust them in the calculator.

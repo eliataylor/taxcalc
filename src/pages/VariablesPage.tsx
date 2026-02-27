@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {
     Box,
     Button,
+    Card,
+    CardContent,
     Divider,
+    Grid,
     Paper,
     Table,
     TableBody,
@@ -18,7 +21,6 @@ import {LevyTypeDefinition, PersistedState, TaxBracketData} from '../types';
 import {
     BUDGET_TARGETS,
     CENSUS_FIGURES,
-    DEFAULT_LEVY_TYPES,
     MONEY_SUPPLY_REFS,
 } from '../data/definitions.ts';
 import {calculateBracketTax, calculateNetWorth} from '../utils/calculations.ts';
@@ -56,11 +58,8 @@ const VariablesPage: React.FC = () => {
         }
     }, [location.hash]);
 
-    const userLevyDefs: LevyTypeDefinition[] = userState?.levyTypeDefs ?? [];
+    const userLevyDefs: LevyTypeDefinition[] = userState?.levyTypeDefs.sort((a) => a.category === 'debt' ? 1 : -1) ?? [];
     const userBrackets: TaxBracketData[] = userState?.brackets ?? [];
-
-    const hasCustomConfig = userState !== null;
-    const levyDefsChanged = hasCustomConfig && JSON.stringify(userLevyDefs.map(d => d.key).sort()) !== JSON.stringify(DEFAULT_LEVY_TYPES.map(d => d.key).sort());
 
     return (
         <Box sx={{maxWidth: 900, mx: 'auto', px: 2, py: 4}}>
@@ -159,43 +158,7 @@ const VariablesPage: React.FC = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
-
-            {/* Section 3: Default Levy Type Definitions */}
-            <Typography variant="h6" sx={{mb: 1}}>Default Levy Types (Net Worth Components)</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                Net Worth = Assets &minus; Debts. Asset levy types add to taxable worth; debt levy types reduce it.
-                Each category has a ~per-person dollar amount and an independent rate within every bracket.
-                For assets the rate is a tax rate; for debts the rate is a deduction percentage.
-            </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><strong>Category</strong></TableCell>
-                            <TableCell><strong>Name</strong></TableCell>
-                            <TableCell><strong>Description</strong></TableCell>
-                            <TableCell><strong>Rationale</strong></TableCell>
-                            <TableCell align="right"><strong>Default Rate</strong></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {DEFAULT_LEVY_TYPES.map(lt => (
-                            <TableRow key={lt.key} id={`levy-${lt.key}`}>
-                                <TableCell>
-                                    <Typography variant="caption" color={lt.category === 'debt' ? 'warning.main' : 'success.main'} sx={{textTransform: 'uppercase', fontWeight: 600}}>
-                                        {lt.category}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>{lt.name}</TableCell>
-                                <TableCell>{lt.description}</TableCell>
-                                <TableCell>{lt.rationale}</TableCell>
-                                <TableCell align="right">{formatPercentage(lt.defaultRate)}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
+            
             {/* Section 4: Bracket Anatomy */}
             <Typography variant="h6" sx={{mb: 1}}>Bracket Anatomy</Typography>
             <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
@@ -279,58 +242,82 @@ const VariablesPage: React.FC = () => {
 
             <Divider sx={{my: 4}}/>
 
-            {/* Section 7: Your Current Configuration (dynamic) */}
-            <Typography variant="h5" sx={{mb: 1}}>Your Current Configuration</Typography>
+            <Typography variant="h5" sx={{mb: 1}}>Holdings &amp; Debts</Typography>
 
-            {!hasCustomConfig ? (
-                <Paper variant="outlined" sx={{p: 3, textAlign: 'center'}}>
-                    <Typography variant="body1" color="text.secondary">
-                        No saved configuration. Defaults are loaded when you open the{' '}
-                        <RouterLink to="/calculator">Calculator</RouterLink>.
-                    </Typography>
-                </Paper>
-            ) : (
-                <>
-                    {/* User's levy types */}
-                    {levyDefsChanged && (
-                        <>
-                            <Typography variant="subtitle1" sx={{mb: 1}}>Custom Levy Types</Typography>
-                            <TableContainer component={Paper} variant="outlined" sx={{mb: 3}}>
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell><strong>Category</strong></TableCell>
-                                            <TableCell><strong>Key</strong></TableCell>
-                                            <TableCell><strong>Name</strong></TableCell>
-                                            <TableCell><strong>Description</strong></TableCell>
-                                            <TableCell align="right"><strong>Default Rate</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {userLevyDefs.map(lt => (
-                                            <TableRow key={lt.key} id={`levy-${lt.key}`}>
-                                                <TableCell>
-                                                    <Typography variant="caption" color={lt.category === 'debt' ? 'warning.main' : 'success.main'} sx={{textTransform: 'uppercase', fontWeight: 600}}>
-                                                        {lt.category}
+            <Paper variant="outlined" sx={{p: 3}}>
+            <Typography variant="body2" color="text.secondary" sx={{mb: 3}}>
+                Net Worth = Holdings &minus; Debts. Each category has a ~per-person dollar amount and an independent rate within every bracket.
+                For holdings the rate is a tax rate; for debts the rate is a deduction percentage.
+            </Typography>
+
+            <Typography variant="subtitle1" color="success.main" sx={{mb: 1.5, fontWeight: 600}}>Holdings</Typography>
+                            <Grid container spacing={2} sx={{mb: 3}}>
+                                {userLevyDefs.filter(lt => lt.category === 'asset').sort((a, b) => b.defaultRate - a.defaultRate).map(lt => (
+                                    <Grid size={{xs: 12, sm: 6, md: 4}} key={lt.key} id={`levy-${lt.key}`}>
+                                        <Card variant="outlined" sx={{height: '100%'}}>
+                                            <CardContent sx={{pb: '16px !important'}}>
+                                                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
+                                                    <Typography variant="subtitle1" sx={{fontWeight: 600}}>
+                                                        {lt.name}
                                                     </Typography>
-                                                </TableCell>
-                                                <TableCell><code>{lt.key}</code></TableCell>
-                                                <TableCell>{lt.name}</TableCell>
-                                                <TableCell>{lt.description || '—'}</TableCell>
-                                                <TableCell align="right">{formatPercentage(lt.defaultRate)}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </>
-                    )}
+                                                    <Typography variant="subtitle2" color="text.secondary">
+                                                        {formatPercentage(lt.defaultRate)}
+                                                    </Typography>
+                                                </Box>
+                                                {lt.description && (
+                                                    <Typography variant="body2" color="text.secondary" sx={{mb: lt.rationale ? 1 : 0}}>
+                                                        {lt.description}
+                                                    </Typography>
+                                                )}
+                                                {lt.rationale && (
+                                                    <Typography variant="caption" color="text.secondary" sx={{display: 'block', fontStyle: 'italic'}}>
+                                                        {lt.rationale}
+                                                    </Typography>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+
+            <Typography variant="subtitle1" color="warning.main" sx={{mb: 1.5, fontWeight: 600}}>Debts</Typography>
+                            <Grid container spacing={2} sx={{mb: 1}}>
+                                {userLevyDefs.filter(lt => lt.category === 'debt').sort((a, b) => b.defaultRate - a.defaultRate).map(lt => (
+                                    <Grid size={{xs: 12, sm: 6, md: 4}} key={lt.key} id={`levy-${lt.key}`}>
+                                        <Card variant="outlined" sx={{height: '100%'}}>
+                                            <CardContent sx={{pb: '16px !important'}}>
+                                                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
+                                                    <Typography variant="subtitle1" sx={{fontWeight: 600}}>
+                                                        {lt.name}
+                                                    </Typography>
+                                                    <Typography variant="subtitle2" color="text.secondary">
+                                                        {formatPercentage(lt.defaultRate)}
+                                                    </Typography>
+                                                </Box>
+                                                {lt.description && (
+                                                    <Typography variant="body2" color="text.secondary" sx={{mb: lt.rationale ? 1 : 0}}>
+                                                        {lt.description}
+                                                    </Typography>
+                                                )}
+                                                {lt.rationale && (
+                                                    <Typography variant="caption" color="text.secondary" sx={{display: 'block', fontStyle: 'italic'}}>
+                                                        {lt.rationale}
+                                                    </Typography>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                </Paper>
 
                     {/* Condensed bracket summary */}
                     <Typography variant="subtitle1" sx={{mb: 1}}>Bracket Summary</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                        Population: {formatPopulation(userState.population)} · Budget Target: ${formatPopulation(userState.budgetTarget ?? userState.moneySupply ?? 0)}
-                    </Typography>
+                    {userState && (
+                        <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+                            Population: {formatPopulation(userState.population)} · Budget Target: ${formatPopulation(userState.budgetTarget ?? userState.moneySupply ?? 0)}
+                        </Typography>
+                    )}
                     <TableContainer component={Paper} variant="outlined" sx={{mb: 3}}>
                         <Table size="small">
                             <TableHead>
@@ -374,8 +361,6 @@ const VariablesPage: React.FC = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </>
-            )}
         </Box>
     );
 };

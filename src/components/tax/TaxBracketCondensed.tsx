@@ -116,10 +116,7 @@ const TaxBracketCondensed: React.FC<TaxBracketCondensedProps> = ({
                                     borderBottom: '1px solid',
                                     borderColor: 'divider',
                                 }}>
-                                    <Box sx={{display: 'flex', alignItems: 'center', gap: 0.5}}>
-                                        <Typography variant="caption" color={levy.category === 'debt' ? 'warning.main' : 'text.secondary'} sx={{minWidth: 120}}>
-                                            {levy.category === 'debt' ? '− ' : ''}{getLevyName(levy.key)}
-                                        </Typography>
+                                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                                         {(() => {
                                             const def = levyTypeDefs.find(d => d.key === levy.key);
                                             return (
@@ -154,6 +151,9 @@ const TaxBracketCondensed: React.FC<TaxBracketCondensedProps> = ({
                                                 </Tooltip>
                                             );
                                         })()}
+                                        <Typography variant="caption" color={levy.category === 'debt' ? 'warning.main' : 'text.secondary'} sx={{minWidth: 120}}>
+                                            {levy.category === 'debt' ? '− ' : ''}{getLevyName(levy.key)}
+                                        </Typography>
                                     </Box>
                                     <Box sx={{display: 'flex', gap: 2, alignItems: 'baseline'}}>
                                         {editable ? (
