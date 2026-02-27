@@ -9,9 +9,13 @@ import {
     DialogContent,
     DialogTitle,
     Divider,
+    FormControl,
     Grid,
     IconButton,
+    InputLabel,
+    MenuItem,
     Paper,
+    Select,
     ToggleButton,
     ToggleButtonGroup,
     Tooltip,
@@ -20,29 +24,36 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import HomeIcon from '@mui/icons-material/Home';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import {v4 as uuidv4} from 'uuid';
 import AddIcon from '@mui/icons-material/Add';
 import {Link as RouterLink, useSearchParams} from 'react-router-dom';
 
 import PayingPopulation from './inputs/PayingPopulation';
 import BudgetTarget from './inputs/BudgetTarget';
+import NetWorthTarget from './inputs/NetWorthTarget';
 import LevyTypeEditor from './inputs/LevyTypeEditor';
 // import TaxBracket from './tax/TaxBracket';
 import TaxBracketCondensed from './tax/TaxBracketCondensed.tsx';
 import ScenarioManager from './tax/ScenarioManager.tsx';
 import TotalTaxRevenueByBracket from './charts/TotalTaxRevenueByBracket';
 import TaxDueOverNetWorth from './charts/TaxDueOverNetWorth';
+import TotalNetWorthByBracket from './charts/TotalNetWorthByBracket';
 
 import {LevyTypeDefinition, TaxBracketData} from '../types';
 import {
     calculateBracketTax,
+    calculateNetWorth,
     calculatePopulationBalance,
     calculateTaxPercentage,
+    calculateTotalNetWorth,
     calculateTotalTax,
     updateBracketTaxes,
 } from '../utils/calculations.ts';
 import {formatMoney, formatPopulation} from '../utils/formatters.ts';
 import {usePersistedState} from '../hooks/usePersistedState';
+import { Info } from '@mui/icons-material';
 
 // const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#A4DE6C']
 /**
@@ -51,11 +62,22 @@ import {usePersistedState} from '../hooks/usePersistedState';
 const Calculator: React.FC = () => {
     const {
         population,
+        populationName,
+        populationDescription,
         budgetTarget,
+        budgetTargetName,
+        budgetTargetDescription,
+        netWorthTarget,
+        netWorthTargetName,
+        netWorthTargetDescription,
         levyTypeDefs,
         brackets,
         setPopulation,
+        setPopulationMeta,
         setBudgetTarget,
+        setBudgetTargetMeta,
+        setNetWorthTarget,
+        setNetWorthTargetMeta,
         setLevyTypeDefs,
         setBrackets,
         saveScenario,
@@ -86,6 +108,10 @@ const Calculator: React.FC = () => {
     const [levyEditorOpen, setLevyEditorOpen] = useState(false);
     const [editingLevyDef, setEditingLevyDef] = useState<LevyTypeDefinition | null>(null);
 
+    type SortField = 'population' | 'netWorth' | 'netWorthPerPerson' | 'effectiveRate' | 'totalTax';
+    const [sortField, setSortField] = useState<SortField>('netWorth');
+    const [sortAsc, setSortAsc] = useState(false);
+
     const computedBrackets = useMemo(() => updateBracketTaxes(brackets), [brackets]);
     const totalTaxRevenue = useMemo(() => calculateTotalTax(computedBrackets), [computedBrackets]);
     const populationBalance = useMemo(
@@ -96,6 +122,45 @@ const Calculator: React.FC = () => {
         () => calculateTaxPercentage(totalTaxRevenue, budgetTarget),
         [totalTaxRevenue, budgetTarget],
     );
+    const totalNetWorth = useMemo(
+        () => calculateTotalNetWorth(computedBrackets),
+        [computedBrackets],
+    );
+    const netWorthBalance = netWorthTarget - totalNetWorth;
+
+    const sortedBrackets = useMemo(() => {
+        if (sortField === 'default') return computedBrackets;
+        const sorted = [...computedBrackets].sort((a, b) => {
+            let aVal = 0, bVal = 0;
+            switch (sortField) {
+                case 'population':
+                    aVal = a.population;
+                    bVal = b.population;
+                    break;
+                case 'netWorth':
+                    aVal = calculateNetWorth(a);
+                    bVal = calculateNetWorth(b);
+                    break;
+                case 'netWorthPerPerson':
+                    aVal = a.population > 0 ? calculateNetWorth(a) / a.population : 0;
+                    bVal = b.population > 0 ? calculateNetWorth(b) / b.population : 0;
+                    break;
+                case 'effectiveRate': {
+                    const aNet = calculateNetWorth(a);
+                    const bNet = calculateNetWorth(b);
+                    aVal = aNet > 0 ? calculateBracketTax(a) / aNet : 0;
+                    bVal = bNet > 0 ? calculateBracketTax(b) / bNet : 0;
+                    break;
+                }
+                case 'totalTax':
+                    aVal = calculateBracketTax(a);
+                    bVal = calculateBracketTax(b);
+                    break;
+            }
+            return sortAsc ? aVal - bVal : bVal - aVal;
+        });
+        return sorted;
+    }, [computedBrackets, sortField, sortAsc]);
 
     const handleBracketChange = (id: string, changes: Partial<TaxBracketData>) => {
         setBrackets(brackets.map(bracket =>
@@ -103,9 +168,18 @@ const Calculator: React.FC = () => {
         ));
     };
 
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
     const addNewBracket = () => {
         const newBracket: TaxBracketData = {
-            color: '#FF8042',
+            color: getRandomColor(),
             id: uuidv4(),
             name: `Bracket ${brackets.length + 1}`,
             popPercent: 0,
@@ -220,14 +294,27 @@ const Calculator: React.FC = () => {
                      size={{xs: 12, md: 4}} gap={2} style={{position: 'relative'}}>
 
                         {/* Inputs */}
-                        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+                        <Box sx={{display: 'flex', flexDirection: 'column', gap: 4}}>
                             <PayingPopulation
                                 val={population}
+                                name={populationName}
+                                description={populationDescription}
                                 onValueChange={setPopulation}
+                                onMetaChange={setPopulationMeta}
                             />
                             <BudgetTarget
                                 val={budgetTarget}
+                                name={budgetTargetName}
+                                description={budgetTargetDescription}
                                 onValueChange={setBudgetTarget}
+                                onMetaChange={setBudgetTargetMeta}
+                            />
+                            <NetWorthTarget
+                                val={netWorthTarget}
+                                name={netWorthTargetName}
+                                description={netWorthTargetDescription}
+                                onValueChange={setNetWorthTarget}
+                                onMetaChange={setNetWorthTargetMeta}
                             />
                         </Box>
 
@@ -236,7 +323,7 @@ const Calculator: React.FC = () => {
                         {/* Results: bracket sums → total → coverage equation */}
                         {(() => {
                             const pct = taxBalancePercentage;
-                            const color = pct > 100 ? 'red' : pct >= 60 ? 'green' : 'orange';
+                            const color = pct >= 100 ? 'green' : pct >= 90 ? 'orange' : 'red';
                             return (
                                 <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
                                     {/* Bracket sums mini-table */}
@@ -330,6 +417,10 @@ const Calculator: React.FC = () => {
                         </Grid>
 
                         <Grid>
+                            <TotalNetWorthByBracket brackets={computedBrackets}/>
+                        </Grid>
+
+                        <Grid>
                             <TaxDueOverNetWorth budgetTarget={budgetTarget}
                                                 brackets={computedBrackets}/>
                         </Grid>
@@ -362,6 +453,7 @@ const Calculator: React.FC = () => {
                                             label={def.name}
                                             color={def.category === 'debt' ? 'warning' : 'default'}
                                             variant={def.category === 'debt' ? 'outlined' : 'filled'}
+                                            icon={<Info />}
                                             onClick={() => { setEditingLevyDef(def); setLevyEditorOpen(true); }}
                                             onDelete={() => removeLevyType(def.key)}
                                             size="small"
@@ -377,7 +469,28 @@ const Calculator: React.FC = () => {
                             />
 
                             <Paper sx={{p: 2, mb: 3}}>
-                                
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 2}}>
+                                    <FormControl size="small" sx={{minWidth: 200}}>
+                                        <InputLabel id="sort-brackets-label-edit">Sort Brackets By</InputLabel>
+                                        <Select
+                                            labelId="sort-brackets-label-edit"
+                                            label="Sort Brackets By"
+                                            value={sortField}
+                                            onChange={e => setSortField(e.target.value as SortField)}
+                                        >
+                                            <MenuItem value="population">Total Population</MenuItem>
+                                            <MenuItem value="netWorth">Total Net Worth</MenuItem>
+                                            <MenuItem value="netWorthPerPerson">Net Worth per Person</MenuItem>
+                                            <MenuItem value="effectiveRate">Effective Rate</MenuItem>
+                                            <MenuItem value="totalTax">Total Taxes Due</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                        <Tooltip title={sortAsc ? 'Ascending' : 'Descending'}>
+                                            <IconButton size="small" onClick={() => setSortAsc(prev => !prev)}>
+                                                {sortAsc ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+                                            </IconButton>
+                                        </Tooltip>
+                                </Box>
 
                                 {populationBalance !== 0 && (
                                     <Alert
@@ -390,7 +503,18 @@ const Calculator: React.FC = () => {
                                     </Alert>
                                 )}
 
-                                {computedBrackets.map(bracket => (
+                                {netWorthBalance !== 0 && (
+                                    <Alert
+                                        severity={netWorthBalance < 0 ? 'error' : 'warning'}
+                                        sx={{mb: 2}}
+                                    >
+                                        {netWorthBalance < 0
+                                            ? `Net worth exceeds target by ${formatMoney(Math.abs(netWorthBalance), {notation: 'compact'})}`
+                                            : `${formatMoney(netWorthBalance, {notation: 'compact'})} in net worth not accounted for in brackets`}
+                                    </Alert>
+                                )}
+
+                                {sortedBrackets.map(bracket => (
                                     <Box key={bracket.id} sx={{position: 'relative'}}>
                                         <TaxBracketCondensed
                                             bracket={bracket}
@@ -426,6 +550,29 @@ const Calculator: React.FC = () => {
 
                     {viewMode === 'condensed' && (
                         <Box sx={{p: 2, mb: 3}}>
+                            <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 2}}>
+                                <FormControl size="small" sx={{minWidth: 200}}>
+                                    <InputLabel id="sort-brackets-label-condensed">Sort Brackets By</InputLabel>
+                                    <Select
+                                        labelId="sort-brackets-label-condensed"
+                                        label="Sort Brackets By"
+                                        value={sortField}
+                                        onChange={e => setSortField(e.target.value as SortField)}
+                                    >
+                                        <MenuItem value="population">Total Population</MenuItem>
+                                        <MenuItem value="netWorth">Total Net Worth</MenuItem>
+                                        <MenuItem value="netWorthPerPerson">Net Worth per Person</MenuItem>
+                                        <MenuItem value="effectiveRate">Effective Rate</MenuItem>
+                                        <MenuItem value="totalTax">Total Taxes Due</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                    <Tooltip title={sortAsc ? 'Ascending' : 'Descending'}>
+                                        <IconButton size="small" onClick={() => setSortAsc(prev => !prev)}>
+                                            {sortAsc ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+                                        </IconButton>
+                                    </Tooltip>
+                            </Box>
+
                             {populationBalance !== 0 && (
                                 <Alert
                                     severity={populationBalance < 0 ? 'error' : 'warning'}
@@ -437,7 +584,18 @@ const Calculator: React.FC = () => {
                                 </Alert>
                             )}
 
-                            {computedBrackets.map(bracket => (
+                            {netWorthBalance !== 0 && (
+                                <Alert
+                                    severity={netWorthBalance < 0 ? 'error' : 'warning'}
+                                    sx={{mb: 2}}
+                                >
+                                    {netWorthBalance < 0
+                                        ? `Net worth exceeds target by ${formatMoney(Math.abs(netWorthBalance), {notation: 'compact'})}`
+                                        : `${formatMoney(netWorthBalance, {notation: 'compact'})} in net worth not accounted for in brackets`}
+                                </Alert>
+                            )}
+
+                            {sortedBrackets.map(bracket => (
                                 <TaxBracketCondensed
                                     key={bracket.id}
                                     bracket={bracket}

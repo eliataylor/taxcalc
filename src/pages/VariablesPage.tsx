@@ -61,6 +61,36 @@ const VariablesPage: React.FC = () => {
     const userLevyDefs: LevyTypeDefinition[] = userState?.levyTypeDefs.sort((a) => a.category === 'debt' ? 1 : -1) ?? [];
     const userBrackets: TaxBracketData[] = userState?.brackets ?? [];
 
+    const selectedPopulation = userState ? {
+        name: userState.populationName
+            ?? CENSUS_FIGURES.find(f => f.value === userState.population)?.name
+            ?? 'Custom',
+        value: userState.population,
+        description: userState.populationDescription
+            ?? CENSUS_FIGURES.find(f => f.value === userState.population)?.description
+            ?? '',
+    } : null;
+
+    const selectedBudget = userState ? {
+        name: userState.budgetTargetName
+            ?? BUDGET_TARGETS.find(bt => bt.value === userState.budgetTarget)?.name
+            ?? 'Custom',
+        value: userState.budgetTarget,
+        description: userState.budgetTargetDescription
+            ?? BUDGET_TARGETS.find(bt => bt.value === userState.budgetTarget)?.description
+            ?? '',
+    } : null;
+
+    const selectedNetWorth = userState ? {
+        name: userState.netWorthTargetName
+            ?? MONEY_SUPPLY_REFS.find(r => r.value === userState.netWorthTarget)?.name
+            ?? 'Custom',
+        value: userState.netWorthTarget,
+        description: userState.netWorthTargetDescription
+            ?? MONEY_SUPPLY_REFS.find(r => r.value === userState.netWorthTarget)?.description
+            ?? '',
+    } : null;
+
     return (
         <Box sx={{maxWidth: 900, mx: 'auto', px: 2, py: 4}}>
             <Button
@@ -82,85 +112,85 @@ const VariablesPage: React.FC = () => {
             </Typography>
 
             {/* Section 1: Global Inputs - Population */}
-            <Typography variant="h6" sx={{mb: 1}}>Paying Population Options</Typography>
+            <Typography id="paying-population" variant="h6" sx={{mb: 1}}>Paying Population</Typography>
             <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                The total population against which tax brackets are allocated. All bracket populations must sum to this figure.
+                The total population against which tax brackets are allocated. All bracket populations must sum to this figure. 
             </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><strong>Name</strong></TableCell>
-                            <TableCell align="right"><strong>Value</strong></TableCell>
-                            <TableCell><strong>Description</strong></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {CENSUS_FIGURES.map(fig => (
-                            <TableRow key={fig.id}>
-                                <TableCell>{fig.name}</TableCell>
-                                <TableCell align="right">{formatPopulation(fig.value)}</TableCell>
-                                <TableCell>{fig.description}</TableCell>
+            {selectedPopulation && (
+                <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell><strong>Name</strong></TableCell>
+                                <TableCell align="right"><strong>Value</strong></TableCell>
+                                <TableCell><strong>Description</strong></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>{selectedPopulation.name}</TableCell>
+                                <TableCell align="right">{formatPopulation(selectedPopulation.value)}</TableCell>
+                                <TableCell>{selectedPopulation.description}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
 
-            {/* Section 2: Budget Target Options */}
-            <Typography variant="h6" sx={{mb: 1}}>Budget Target Options</Typography>
+            {/* Section 2: Budget Target */}
+            <Typography id="budget-target" variant="h6" sx={{mb: 1}}>Budget Target</Typography>
             <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                The spending goal used to evaluate whether total tax revenue is sufficient. Total revenue is shown as a percentage of this target. Users can also enter a custom dollar amount.
+                The spending goal used to evaluate whether total tax revenue is sufficient. Total revenue is shown as a percentage of this target. 
             </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><strong>Preset</strong></TableCell>
-                            <TableCell align="right"><strong>Value</strong></TableCell>
-                            <TableCell><strong>Description</strong></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {BUDGET_TARGETS.map(bt => (
-                            <TableRow key={bt.id}>
-                                <TableCell>{bt.name}</TableCell>
-                                <TableCell align="right">${formatPopulation(bt.value)}</TableCell>
-                                <TableCell>{bt.description}</TableCell>
+            {selectedBudget && (
+                <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell><strong>Name</strong></TableCell>
+                                <TableCell align="right"><strong>Value</strong></TableCell>
+                                <TableCell><strong>Description</strong></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            {/* Section 2b: Money Supply Reference Figures */}
-            <Typography variant="h6" sx={{mb: 1}}>Money Supply Reference Figures</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                These are not budget targets but provide economic context — what fraction of circulating money would this tax capture?
-            </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><strong>Measure</strong></TableCell>
-                            <TableCell align="right"><strong>Value</strong></TableCell>
-                            <TableCell><strong>Description</strong></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {Object.entries(MONEY_SUPPLY_REFS).map(([key, ref]) => (
-                            <TableRow key={key}>
-                                <TableCell>{ref.name}</TableCell>
-                                <TableCell align="right">${formatPopulation(ref.value)}</TableCell>
-                                <TableCell>{ref.description}</TableCell>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>{selectedBudget.name}</TableCell>
+                                <TableCell align="right">${formatPopulation(selectedBudget.value)}</TableCell>
+                                <TableCell>{selectedBudget.description}</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
             
+            {/* Section 3: Net Worth Target */}
+            <Typography id="net-worth-target" variant="h6" sx={{mb: 1}}>Net Worth Target</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+                The total net worth the model should account for across all brackets. The calculator warns when bracket net worths don&rsquo;t sum to this figure.
+            </Typography>
+            {selectedNetWorth && (
+                <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell><strong>Name</strong></TableCell>
+                                <TableCell align="right"><strong>Value</strong></TableCell>
+                                <TableCell><strong>Description</strong></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>{selectedNetWorth.name}</TableCell>
+                                <TableCell align="right">${formatPopulation(selectedNetWorth.value)}</TableCell>
+                                <TableCell>{selectedNetWorth.description}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
+
             {/* Section 4: Bracket Anatomy */}
-            <Typography variant="h6" sx={{mb: 1}}>Bracket Anatomy</Typography>
+            <Typography id="bracket-anatomy" variant="h6" sx={{mb: 1}}>Bracket Anatomy</Typography>
             <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
                 Each tax bracket represents a segment of the paying population grouped by wealth tier. A bracket contains:
             </Typography>
@@ -193,8 +223,50 @@ const VariablesPage: React.FC = () => {
                 </Table>
             </TableContainer>
 
-            {/* Section 5: Population Constraint */}
-            <Typography variant="h6" sx={{mb: 1}}>Population Constraint</Typography>
+            {/* Section 4: Holdings & Debts Anatomy */}
+            <Typography id="holdings-debts-anatomy" variant="h6" sx={{mb: 1}}>Holdings &amp; Debts Anatomy</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+                Each holding or debt category defines a type of asset or liability tracked per person within every bracket. A category contains:
+            </Typography>
+            <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><strong>Field</strong></TableCell>
+                            <TableCell><strong>Description</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell><code>key</code></TableCell>
+                            <TableCell>Unique identifier for the category (e.g. &ldquo;checking&rdquo;, &ldquo;mortgage&rdquo;)</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell><code>name</code></TableCell>
+                            <TableCell>Display label (e.g. &ldquo;Liquid Capital&rdquo;, &ldquo;Consumer Debt&rdquo;)</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell><code>category</code></TableCell>
+                            <TableCell>&ldquo;asset&rdquo; for holdings (taxed) or &ldquo;debt&rdquo; for liabilities (deducted)</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell><code>defaultRate</code></TableCell>
+                            <TableCell>Starting tax rate (assets) or deduction rate (debts) applied per bracket</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell><code>description</code></TableCell>
+                            <TableCell>What this category represents and what it includes</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell><code>rationale</code></TableCell>
+                            <TableCell>Why this category is included in the model (optional)</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {/* Population Constraint */}
+            <Typography id="population-constraint" variant="h6" sx={{mb: 1}}>Population Constraint</Typography>
             <Paper variant="outlined" sx={{p: 2, mb: 4}}>
                 <Typography variant="body1" sx={{mb: 1, fontFamily: 'monospace'}}>
                     sum(bracket.population) = payingPopulation
@@ -205,8 +277,20 @@ const VariablesPage: React.FC = () => {
                 </Typography>
             </Paper>
 
+            {/* Net Worth Constraint */}
+            <Typography id="net-worth-constraint" variant="h6" sx={{mb: 1}}>Net Worth Constraint</Typography>
+            <Paper variant="outlined" sx={{p: 2, mb: 4}}>
+                <Typography variant="body1" sx={{mb: 1, fontFamily: 'monospace'}}>
+                    sum(bracketNetWorth) = netWorthTarget
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    The sum of all bracket net worths (assets minus debts, multiplied by bracket population) should equal the selected net worth target.
+                    The calculator displays a warning when net worth is unaccounted for, and an error when bracket totals exceed the target.
+                </Typography>
+            </Paper>
+
             {/* Section 6: Calculation Formulas */}
-            <Typography variant="h6" sx={{mb: 1}}>Calculation Formulas</Typography>
+            <Typography id="calculation-formulas" variant="h6" sx={{mb: 1}}>Calculation Formulas</Typography>
             <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
                 <Table size="small">
                     <TableHead>
@@ -242,7 +326,7 @@ const VariablesPage: React.FC = () => {
 
             <Divider sx={{my: 4}}/>
 
-            <Typography variant="h5" sx={{mb: 1}}>Holdings &amp; Debts</Typography>
+            <Typography id="holdings-debts" variant="h5" sx={{mb: 1}}>Holdings &amp; Debts</Typography>
 
             <Paper variant="outlined" sx={{p: 3}}>
             <Typography variant="body2" color="text.secondary" sx={{mb: 3}}>
@@ -312,7 +396,7 @@ const VariablesPage: React.FC = () => {
                 </Paper>
 
                     {/* Condensed bracket summary */}
-                    <Typography variant="subtitle1" sx={{mb: 1}}>Bracket Summary</Typography>
+                    <Typography id="bracket-summary" variant="subtitle1" sx={{mb: 1}}>Bracket Summary</Typography>
                     {userState && (
                         <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
                             Population: {formatPopulation(userState.population)} · Budget Target: ${formatPopulation(userState.budgetTarget ?? userState.moneySupply ?? 0)}

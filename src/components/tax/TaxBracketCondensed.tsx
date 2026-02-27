@@ -175,13 +175,13 @@ const TaxBracketCondensed: React.FC<TaxBracketCondensedProps> = ({
                                                 value={levy.taxRate}
                                                 type="percent"
                                                 onCommit={v => handleLevyField(index, 'taxRate', Number(v))}
-                                                format={v => levy.dollars === 0 ? '—' : formatPercentage(Number(v))}
+                                                format={v => formatPercentage(Number(v))}
                                                 typographyProps={{variant: 'caption', sx: {minWidth: 40, textAlign: 'right'}}}
                                                 inputWidth={60}
                                             />
                                         ) : (
                                             <Typography variant="caption" sx={{minWidth: 40, textAlign: 'right'}}>
-                                                {levy.dollars === 0 ? '—' : formatPercentage(levy.taxRate)}
+                                                {formatPercentage(levy.taxRate)}
                                             </Typography>
                                         )}
                                         <Typography variant="caption" sx={{fontWeight: 500, minWidth: 60, textAlign: 'right'}}>

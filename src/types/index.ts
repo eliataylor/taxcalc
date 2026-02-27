@@ -76,7 +76,10 @@ export interface PopulationFieldProps {
  */
 export interface PayingPopulationProps {
     val: number;
+    name?: string;
+    description?: string;
     onValueChange?: (newValue: number) => void;
+    onMetaChange?: (name: string, description: string) => void;
 }
 
 /**
@@ -84,7 +87,21 @@ export interface PayingPopulationProps {
  */
 export interface BudgetTargetProps {
     val: number;
+    name?: string;
+    description?: string;
     onValueChange?: (newValue: number) => void;
+    onMetaChange?: (name: string, description: string) => void;
+}
+
+/**
+ * Props for the NetWorthTarget component
+ */
+export interface NetWorthTargetProps {
+    val: number;
+    name?: string;
+    description?: string;
+    onValueChange?: (newValue: number) => void;
+    onMetaChange?: (name: string, description: string) => void;
 }
 
 /**
@@ -125,9 +142,16 @@ export interface HoldingsTaxComparisonChartProps {
 export interface PersistedState {
     buildNumber?: number;
     population: number;
+    populationName?: string;
+    populationDescription?: string;
     budgetTarget: number;
+    budgetTargetName?: string;
+    budgetTargetDescription?: string;
     /** @deprecated — migrated to budgetTarget; kept for reading old saved data */
     moneySupply?: number;
+    netWorthTarget: number;
+    netWorthTargetName?: string;
+    netWorthTargetDescription?: string;
     levyTypeDefs: LevyTypeDefinition[];
     brackets: TaxBracketData[];
 }

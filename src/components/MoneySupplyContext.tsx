@@ -2,21 +2,16 @@ import React from 'react';
 import {Box, Tooltip, Typography} from '@mui/material';
 import {MONEY_SUPPLY_REFS} from '../data/definitions.ts';
 
-const M1 = MONEY_SUPPLY_REFS.m1;
-const M2 = MONEY_SUPPLY_REFS.m2;
-
 interface MoneySupplyContextProps {
     totalTaxRevenue: number;
 }
 
 const MoneySupplyContext: React.FC<MoneySupplyContextProps> = ({totalTaxRevenue}) => {
-    const pctM1 = totalTaxRevenue > 0 ? (totalTaxRevenue / M1.value) * 100 : 0;
-    const pctM2 = totalTaxRevenue > 0 ? (totalTaxRevenue / M2.value) * 100 : 0;
-
-    const items = [
-        {label: 'M1', pct: pctM1, description: M1.description},
-        {label: 'M2', pct: pctM2, description: M2.description},
-    ];
+    const items = MONEY_SUPPLY_REFS.map(ref => ({
+        label: ref.name,
+        pct: totalTaxRevenue > 0 ? (totalTaxRevenue / ref.value) * 100 : 0,
+        description: ref.description,
+    }));
 
     return (
         <Box sx={{

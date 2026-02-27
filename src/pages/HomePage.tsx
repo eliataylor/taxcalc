@@ -14,14 +14,13 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import CalculateIcon from '@mui/icons-material/Calculate';
-import EditNoteIcon from '@mui/icons-material/EditNote';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CodeIcon from '@mui/icons-material/Code';
-import {DEFAULT_LEVY_TYPES} from '../data/definitions.ts';
+import { AccountBalance, Functions } from '@mui/icons-material';
 
 const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 
@@ -34,8 +33,8 @@ const HomePage: React.FC = () => {
             sx={{
                 maxWidth: 900,
                 mx: 'auto',
-                px: 2,
-                py: 4,
+                px: 1,
+                py: 2,
             }}
         >
             <Typography
@@ -49,7 +48,7 @@ const HomePage: React.FC = () => {
             <Paper
                 elevation={0}
                 sx={{
-                    p: 3,
+                    p: 1,
                     mb: 4,
                     border: 1,
                     borderColor: 'divider',
@@ -65,47 +64,37 @@ const HomePage: React.FC = () => {
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
-                    This is an experimental thought exercise &mdash; not a policy proposal. The current
-                    U.S. tax code is roughly 7,000 pages long. This calculator tries to explore whether
-                    a simpler question could do most of the work: <em>how much do you have?</em>
+                    This is an experimental thought exercise and tool to find a formula that feels fair and balances our federal budget. The current
+                    U.S. tax code is roughly 7,000 pages long. This is a tool searching for a simpler formula that can balance the federal budget
+                    against the total Money Supply rather how much people made last year.
                 </Typography>
 
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center" sx={{ mb: 2 }}>
                     <Button
                         component={RouterLink}
                         to="/calculator"
                         variant="contained"
                         size="large"
-                        startIcon={<CalculateIcon />}
+                        color="primary"
+                        startIcon={<AccountBalance />}
                         sx={{ textTransform: 'none' }}
                     >
-                        Explore Tax Brackets
+                        Explore Tax Model
                     </Button>
                     <Button
                         component={RouterLink}
                         to="/calculator?view=edit"
                         variant="contained"
                         size="large"
-                        startIcon={<EditNoteIcon />}
+                        color="secondary"
+                        startIcon={<CalculateIcon />}
                         sx={{ textTransform: 'none' }}
                     >
-                        Create Tax Brackets
-                    </Button>
-                </Stack>
-                <Stack direction="row" justifyContent="center" sx={{ mb: 3 }}>
-                    <Button
-                        component={RouterLink}
-                        to="/variables"
-                        variant="outlined"
-                        size="large"
-                        startIcon={<MenuBookIcon />}
-                        sx={{ textTransform: 'none' }}
-                    >
-                        Variables Reference
+                        Customize Tax Model
                     </Button>
                 </Stack>
 
-                <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                     <Card variant="outlined" sx={{ flex: '1 1 200px', minWidth: 0 }}>
                         <CardContent sx={{ '&:last-child': { pb: 2 } }}>
                             <Typography variant="overline" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -114,12 +103,13 @@ const HomePage: React.FC = () => {
                             <List dense disablePadding>
                                 <ListItem sx={{ py: 0, pl: 0 }}>
                                     <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                                        primary="Encourages circulation of wealth rather than accumulation." />
+                                        primary="Encourages circulation of wealth." />
                                 </ListItem>
                                 <ListItem sx={{ py: 0, pl: 0 }}>
                                     <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                                        primary="Eliminates most deductions, credits, and loopholes by design." />
+                                        primary="Restores the best aspects of Capitalism." />
                                 </ListItem>
+
                             </List>
                         </CardContent>
                     </Card>
@@ -131,11 +121,11 @@ const HomePage: React.FC = () => {
                             <List dense disablePadding>
                                 <ListItem sx={{ py: 0, pl: 0 }}>
                                     <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                                        primary="May discourage saving and incentivize spending." />
+                                        primary="Incentivize Consumerism." />
                                 </ListItem>
                                 <ListItem sx={{ py: 0, pl: 0 }}>
                                     <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                                        primary="Valuing illiquid assets (property, private equity) is hard." />
+                                        primary="A bit harder to audit than our current system." />
                                 </ListItem>
                             </List>
                         </CardContent>
@@ -144,53 +134,124 @@ const HomePage: React.FC = () => {
             </Paper>
 
             {/* --- Defining Net Worth --- */}
-            <Typography variant="h6" sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <HelpOutlineIcon fontSize="small" /> Defining Net Worth
+            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Functions fontSize="small" /> Defining Net Worth
             </Typography>
+            <Typography variant="subtitle1" sx={{ textAlign: 'center', fontWeight: 600, mb: 1.5 }}>
+                <em>Net Worth</em> = Liquid Capital + Reserved Capital + Idle Property &minus; Debts & Interests Owed
+            </Typography>
+
             <Typography variant="body1" sx={{ mb: 1 }}>
-                The central question is: <em>how can we simply defined Net Worth as a taxable figure?</em> Our working
-                definition is <strong>Net Worth = Assets &minus; Debts</strong>, applied to every
-                individual &mdash; including minors, who would file through a legal guardian. This prevents
-                hiding wealth in non-filing relatives. Each side is broken into categories that can be
-                taxed or deducted at independent rates.
+                The goal is to tax who ever is hording money instead of circulating it. That has to include every corporation and individual &mdash; including minors, who would file through a legal guardian.
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                If you're already arguing about how this could be enforced or audited, consider that's not much easier with the current tax code. Plus, we do have internet and AI these days.
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                These categories are starting points &mdash; you can add, remove, or adjust them in the calculator.
-                The goal is to find a minimal set that&rsquo;s both auditable and hard to game.
+            <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                Disagree? The whole point of this site is to offer tools for you can <RouterLink to="/calculator?view=edit">create your own</RouterLink> rules and tax brackets that balance our federal budget. The tool provides warnings when Tax Brackets do not sum to your target Population or Total Net Worth.
             </Typography>
 
-            <Typography variant="subtitle2" sx={{ mt: 2, mb: 0.5 }}>Assets (taxed)</Typography>
-            <List dense disablePadding sx={{ mb: 2 }}>
-                {DEFAULT_LEVY_TYPES.filter(lt => lt.category === 'asset').map(lt => (
-                    <ListItem key={lt.key} alignItems="flex-start" sx={{ py: 0.5 }}>
-                        <ListItemText
-                            primary={lt.name}
-                            secondary={lt.description}
-                        />
-                    </ListItem>
-                ))}
-            </List>
+            <Button
+                component={RouterLink}
+                to="/variables"
+                variant="outlined"
+                size="small"
+                startIcon={<MenuBookIcon />}
+                sx={{ textTransform: 'none', mb: 4 }}
+            >
+                Read all all variables and defintions
+            </Button>
 
-            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Debts (deducted)</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Each debt category carries a deduction rate &mdash; the percentage of that debt that
-                reduces your tax obligation. Rates decrease in the order listed, roughly reflecting
-                how &ldquo;productive&rdquo; the debt is to the broader economy. This ranking is debatable and
-                we&rsquo;d love to hear other arguments.
+
+            {/* --- Open Questions --- */}
+            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <HelpOutlineIcon fontSize="small" />
+
+                Open Questions</Typography>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+                This idea raises more questions than it answers. Some of the harder ones we need your help with:
             </Typography>
             <List dense disablePadding sx={{ mb: 3 }}>
-                {DEFAULT_LEVY_TYPES.filter(lt => lt.category === 'debt').map(lt => (
-                    <ListItem key={lt.key} alignItems="flex-start" sx={{ py: 0.5 }}>
+                <Typography variant="body1" >
+
+                </Typography>
+
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Foreign Assets, Debts and Entities"
+                        secondary="How would we appraise and attribute capital parked overseas that was clearly earned from US spending? Don't give up because of this. Capital Flight is a constant threat in our current tax system too."
+                    />
+                </ListItem>
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Date to File"
+                        secondary="Everyone's Net Worth changes dialy, so when do we file?"
+                    />
+                </ListItem>
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Equity"
+                        secondary="Is there any reason to tax equity at all until it's sold or borrowed against?"
+                    />
+                </ListItem>
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Debt Depreciation"
+                        secondary="How do we prevent repeat deductions of the same debt?"
+                    />
+                </ListItem>
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Transition"
+                        secondary="Can we switch to this systems overnight, or do we need a multi year / phase rollout?"
+                    />
+                </ListItem>
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Banking"
+                        secondary="How do we tax Banks in this system? Maybe the one place we use the current annual earnings system."
+                    />
+                </ListItem>
+
+                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                    <ListItemText
+                        primary="Enforcement and Privacy"
+                        secondary="I imagine no formal disclosure is required unless audited with severe penalties for fraud. All said, how do you balance enforcement with civil liberties? This is even harder for offshore assets. All said, our current system has most of these same problems."
+                    />
+                </ListItem>
+
+            </List>
+
+            {/* --- The Capital Flight Problem --- */}
+            <Paper variant="outlined" sx={{ p: 2.5, mb: 4, borderColor: 'warning.main', borderWidth: 2 }}>
+                <Typography variant="h6" sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <WarningAmberIcon fontSize="small" color="warning" /> The Threat of Capital Flight and Foreign Spending.
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                    Capital Flight is a constant threat in any tax system, but especially hard for this one.
+                    Foreign Spending is probably a bigger issue in on our current system where it's often tax deductible.
+                </Typography>
+                <List dense disablePadding sx={{ mb: 2 }}>
+                    <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
                         <ListItemText
-                            primary={lt.name}
-                            secondary={lt.description}
+                            primary="Capital Flight"
+                            secondary="How can we appraise and attribute large losses of the Money Supply to foreign banks."
                         />
                     </ListItem>
-                ))}
-            </List>
+                    <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
+                        <ListItemText
+                            primary="Foreign Spending"
+                            secondary="How can we incentivize more domestic?"
+                        />
+                    </ListItem>
+                </List>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Possible safeguards worth exploring:
+                </Typography>
+                <List dense disablePadding>
+                    <ListItem sx={{ py: 0 }}>
+                        <ListItemText primaryTypographyProps={{ variant: 'body2' }}
+                            primary="Implement new SKU code system that identifies goods by countries of origin. This would ultimately help tax Walmart more on wealth earned in the US from products, but made abroad." />
+                    </ListItem>
+                </List>
+            </Paper>
 
             {/* --- The Debt Problem --- */}
             <Paper variant="outlined" sx={{ p: 2.5, mb: 4, borderColor: 'warning.main', borderWidth: 2 }}>
@@ -198,27 +259,13 @@ const HomePage: React.FC = () => {
                     <WarningAmberIcon fontSize="small" color="warning" /> The Debt Problem
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                    Debt deductions are the most dangerous part of this model. Any system that reduces
-                    your tax bill based on how much you owe creates an incentive to owe more &mdash;
-                    or to <em>appear</em> to owe more. A few scenarios we&rsquo;re thinking about:
+                    Debt deductions open a lot of loopholes. However, they're probably necessary when calculating Net Worth.
                 </Typography>
                 <List dense disablePadding sx={{ mb: 2 }}>
                     <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
                         <ListItemText
-                            primary="Manufactured debt"
-                            secondary="A wealthy individual takes a loan from a shell company they control offshore. On paper they have debt; in reality they have access to the same capital. The deduction would be free money."
-                        />
-                    </ListItem>
-                    <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
-                        <ListItemText
-                            primary="Overseas creditor opacity"
-                            secondary="If the creditor is a foreign entity, verifying that the debt is real and arm's-length becomes much harder. Cross-border lending could become the new tax shelter."
-                        />
-                    </ListItem>
-                    <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
-                        <ListItemText
-                            primary="Circular lending"
-                            secondary='Two parties lend to each other. Both claim deductions. Neither has actually parted with any capital. Without netting rules, the system double-counts.'
+                            primary="Double Deducations"
+                            secondary="If you never pay your budgets, you shoudl be able to deduct it forever. How do we track and depreciate dedt and it's interest?"
                         />
                     </ListItem>
                     <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
@@ -234,11 +281,7 @@ const HomePage: React.FC = () => {
                 <List dense disablePadding>
                     <ListItem sx={{ py: 0 }}>
                         <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                            primary="Require domestic, regulated creditors for deductions to apply." />
-                    </ListItem>
-                    <ListItem sx={{ py: 0 }}>
-                        <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                            primary="Cap total debt deductions as a percentage of gross assets." />
+                            primary="Setup a depreciation formula for debt." />
                     </ListItem>
                     <ListItem sx={{ py: 0 }}>
                         <ListItemText primaryTypographyProps={{ variant: 'body2' }}
@@ -246,43 +289,11 @@ const HomePage: React.FC = () => {
                     </ListItem>
                     <ListItem sx={{ py: 0 }}>
                         <ListItemText primaryTypographyProps={{ variant: 'body2' }}
-                            primary="Use declining deduction rates at higher net worth tiers &mdash; debt relief matters more to the lower brackets." />
+                            primary="Foreign debt is not deductible." />
                     </ListItem>
                 </List>
             </Paper>
 
-            {/* --- Open Questions --- */}
-            <Typography variant="h6" sx={{ mb: 1.5 }}>Open Questions</Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-                This model raises more questions than it answers. That&rsquo;s the point &mdash; it&rsquo;s a
-                thinking tool, not a finished product. Some of the harder ones:
-            </Typography>
-            <List dense disablePadding sx={{ mb: 3 }}>
-                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
-                    <ListItemText
-                        primary="Banks and Corporations"
-                        secondary="How should entities be taxed on net worth too, or only individuals? Corporate balance sheets are structured very differently from personal ones."
-                    />
-                </ListItem>
-                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
-                    <ListItemText
-                        primary="Transition"
-                        secondary="You can't switch tax systems overnight. What does a 10-year phase-in look like? Would you run both systems in parallel?"
-                    />
-                </ListItem>
-                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
-                    <ListItemText
-                        primary="Enforcement and Privacy"
-                        secondary="A net worth tax requires knowing what people own. How do you balance enforcement with civil liberties? Could zero-knowledge proofs or privacy-preserving audits help? This is even harder for offshore assets."
-                    />
-                </ListItem>
-                <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
-                    <ListItemText
-                        primary="Asset Transfers"
-                        secondary="Universal individual filing closes the simplest loophole &mdash; gifting assets to relatives to lower your bracket. But what about transfers to non-relatives, shell entities, or foreign nationals?"
-                    />
-                </ListItem>
-            </List>
 
             <Divider sx={{ my: 3 }} />
 
@@ -290,7 +301,7 @@ const HomePage: React.FC = () => {
                 <CodeIcon fontSize="small" /> Contribute
             </Typography>
             <Typography variant="body1" sx={{ mb: 1 }}>
-                This is an open-source thought experiment. We&rsquo;re looking for economists, tax attorneys,
+                This is an open-source thought experiment. I'm looking for economists, tax attorneys,
                 policy researchers, engineers &mdash; or anyone who finds this interesting and wants to
                 poke holes in it.
             </Typography>
@@ -304,8 +315,8 @@ const HomePage: React.FC = () => {
                 <a href="https://docs.google.com/document/d/1qCxG9i8CHDaBKULj7ITyCVCcWngkd6edAwGGiV1Z2Zo/edit?usp=sharing" {...linkProps}>
                     research
                 </a>
-                {' '}gathered by Gemini{' '}
-                <img src="/gemini-logo.png" alt="Gemini" height={17} style={{ verticalAlign: 'middle' }} />.
+                {' '}gathered by <img src="/gemini-logo.png" alt="Gemini" height={17} style={{ verticalAlign: 'middle' }} /> Gemini.
+
             </Typography>
 
             <Divider sx={{ my: 4 }} />

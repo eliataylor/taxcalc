@@ -1,7 +1,7 @@
 {
-  "id": "bd164516-55c4-4dff-ba67-9f43920289e6",
-  "name": "Tax Scenario 2/25/2026",
-  "date": "2026-02-26T01:26:23.269Z",
+  "id": "c0380ab6-a9fc-46e3-9e43-7b18793c8498",
+  "name": "Tax Scenario 2/27/2026",
+  "date": "2026-02-27T23:43:07.813Z",
   "population": 347300000,
   "budgetTarget": 6300000000000,
   "levyTypeDefs": [
@@ -23,19 +23,11 @@
     },
     {
       "key": "overseas",
-      "name": "Foreign-Held Capital",
+      "name": "Capital Flight",
       "category": "asset",
-      "description": "Capital held in foreign jurisdictions regardless of asset type — bank accounts, investments, property, or other holdings. This category exists because foreign-held capital is not circulating in the domestic economy.",
-      "rationale": "Highest capital rate — foreign-held wealth has left the domestic economy entirely. The elevated rate creates a strong incentive to repatriate capital. Appraising foreign-held assets is inherently difficult, and the premium also accounts for the verification burden on enforcement.",
+      "description": "Taxes offshoring of US earnings to foreign assets.",
+      "rationale": "Ignore the little things like an amazon purchase that goes to China for now. Think about preventing corporations selling in the US market then parking their earnings overseas.",
       "defaultRate": 0.025
-    },
-    {
-      "key": "occupied_property",
-      "name": "Productive Property",
-      "category": "asset",
-      "description": "Real estate in active economic use — housing people, growing food, running a business, or otherwise serving its zoned purpose at meaningful capacity. Utilization must be substantial: a 50-unit building with 3 tenants is not productive. Tenancy must be arm's-length (renting to yourself or related parties at below-market rates does not qualify). Seasonal or part-time use must meet a minimum annual utilization threshold.",
-      "rationale": "Low flat rate recognizes that productive property contributes to the economy. The incentive is the gap between this rate and the idle property rate — not the rate itself. Defining \"meaningful capacity\" is the main loophole risk — tying classification to zoning compliance, minimum occupancy thresholds, and municipal assessment data could help.",
-      "defaultRate": 0.005
     },
     {
       "key": "vacant_property",
@@ -43,13 +35,13 @@
       "category": "asset",
       "description": "Real estate not serving its zoned purpose or operating well below capacity — effectively functioning as a store of value. Includes completely vacant land or buildings, properties with token occupancy designed to game a lower rate, and seasonal properties used below a utilization threshold.",
       "rationale": "Significantly higher than productive property rate to make land speculation expensive and push property back into productive use, directly addressing housing shortages. The gap between this rate and the Productive Property rate is the core incentive.",
-      "defaultRate": 0.08
+      "defaultRate": 0.1
     },
     {
       "key": "business_debt",
       "name": "Business Debt",
       "category": "debt",
-      "description": "Outstanding loans, credit lines, bonds, or mortgage debt on commercial and investment property held for business operations.",
+      "description": "Outstanding loans, credit lines, bonds, or mortgage debt on commercial and investment property held for business operations. All debts can only be deducted once.",
       "rationale": "Highest deduction rate — business debt fuels economic activity and job creation.",
       "defaultRate": 0.08
     },
@@ -57,7 +49,7 @@
       "key": "personal_debt",
       "name": "Personal Debt",
       "category": "debt",
-      "description": "Consumer credit card balances, auto loans, residential mortgage debt, and other personal liabilities.",
+      "description": "Consumer credit card balances, auto loans, residential mortgage debt, and other personal liabilities. All debts can only be deducted once.",
       "rationale": "Moderate deduction for general consumer obligations.",
       "defaultRate": 0.04
     },
@@ -65,20 +57,78 @@
       "key": "student_debt",
       "name": "Student Debt",
       "category": "debt",
-      "description": "Outstanding educational loans (federal and private).",
+      "description": "Outstanding educational loans (federal and private). All debts can only be deducted once.",
       "rationale": "Deduction rate scaled by bracket — lower earners get more relief since education debt disproportionately burdens early-career workers.",
-      "defaultRate": 0.03
+      "defaultRate": 0.5
     },
     {
       "key": "health_debt",
       "name": "Health Debt",
       "category": "debt",
-      "description": "Unpaid medical bills, hospital balances, and health-related loans.",
-      "rationale": "Deduction rate scaled by bracket — medical debt is largely involuntary and lower earners deserve more relief.",
-      "defaultRate": 0.02
+      "description": "Unpaid medical bills, hospital balances, and health-related loans. All debts can only be deducted once.",
+      "rationale": "A way to subsidize health care and keep our current system from bankrupting people.",
+      "defaultRate": 1
     }
   ],
   "brackets": [
+    {
+      "color": "#FF0000",
+      "id": "8876a8e7-c92a-42a0-ac8f-d1142ad26eb2",
+      "name": "Fortune 500",
+      "popPercent": 0,
+      "population": 500,
+      "levyTypes": [
+        {
+          "key": "checking",
+          "category": "asset",
+          "dollars": 56360000000,
+          "taxRate": 0.03
+        },
+        {
+          "key": "savings",
+          "category": "asset",
+          "dollars": 75000000000,
+          "taxRate": 0.02
+        },
+        {
+          "key": "overseas",
+          "category": "asset",
+          "dollars": 10000000000,
+          "taxRate": 0.03
+        },
+        {
+          "key": "vacant_property",
+          "category": "asset",
+          "dollars": 1000000000,
+          "taxRate": 0.05
+        },
+        {
+          "key": "business_debt",
+          "category": "debt",
+          "dollars": 0,
+          "taxRate": 0.08
+        },
+        {
+          "key": "personal_debt",
+          "category": "debt",
+          "dollars": 0,
+          "taxRate": 0.04
+        },
+        {
+          "key": "student_debt",
+          "category": "debt",
+          "dollars": 0,
+          "taxRate": 0.5
+        },
+        {
+          "key": "health_debt",
+          "category": "debt",
+          "dollars": 0,
+          "taxRate": 1
+        }
+      ],
+      "totalTax": 1770400000000
+    },
     {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "name": "Ultra Wealthy",
@@ -89,13 +139,13 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 3000000,
+          "dollars": 2000000,
           "taxRate": 0.01
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 15000000,
+          "dollars": 3000000,
           "taxRate": 0.025
         },
         {
@@ -105,16 +155,10 @@
           "taxRate": 0.07
         },
         {
-          "key": "occupied_property",
-          "category": "asset",
-          "dollars": 25000000,
-          "taxRate": 0.005
-        },
-        {
           "key": "vacant_property",
           "category": "asset",
           "dollars": 5000000,
-          "taxRate": 0.12
+          "taxRate": 0.15
         },
         {
           "key": "business_debt",
@@ -132,16 +176,16 @@
           "key": "student_debt",
           "category": "debt",
           "dollars": 0,
-          "taxRate": 0.01
+          "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
           "dollars": 0,
-          "taxRate": 0.005
+          "taxRate": 1
         }
       ],
-      "totalTax": 4200000000000
+      "totalTax": 3345000000000
     },
     {
       "id": "ed04e7d9-99fe-4a0b-aeb4-c22dd0b03347",
@@ -169,12 +213,6 @@
           "taxRate": 0.05
         },
         {
-          "key": "occupied_property",
-          "category": "asset",
-          "dollars": 2500000,
-          "taxRate": 0.005
-        },
-        {
           "key": "vacant_property",
           "category": "asset",
           "dollars": 200000,
@@ -196,16 +234,16 @@
           "key": "student_debt",
           "category": "debt",
           "dollars": 0,
-          "taxRate": 0.02
+          "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
           "dollars": 0,
-          "taxRate": 0.01
+          "taxRate": 1
         }
       ],
-      "totalTax": 1940000000000
+      "totalTax": 1440000000000
     },
     {
       "id": "75ece48e-5aac-4da5-942f-0bf5c3e4c4dd",
@@ -233,16 +271,10 @@
           "taxRate": 0
         },
         {
-          "key": "occupied_property",
-          "category": "asset",
-          "dollars": 0,
-          "taxRate": 0
-        },
-        {
           "key": "vacant_property",
           "category": "asset",
           "dollars": 0,
-          "taxRate": 0
+          "taxRate": 0.1
         },
         {
           "key": "business_debt",
@@ -260,13 +292,13 @@
           "key": "student_debt",
           "category": "debt",
           "dollars": 16000,
-          "taxRate": 0.07
+          "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
           "dollars": 4000,
-          "taxRate": 0.05
+          "taxRate": 1
         }
       ],
       "totalTax": 0
@@ -297,16 +329,10 @@
           "taxRate": 0.025
         },
         {
-          "key": "occupied_property",
-          "category": "asset",
-          "dollars": 575000,
-          "taxRate": 0.005
-        },
-        {
           "key": "vacant_property",
           "category": "asset",
           "dollars": 0,
-          "taxRate": 0.08
+          "taxRate": 0.1
         },
         {
           "key": "business_debt",
@@ -324,16 +350,74 @@
           "key": "student_debt",
           "category": "debt",
           "dollars": 5000,
-          "taxRate": 0.03
+          "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
           "dollars": 2000,
-          "taxRate": 0.02
+          "taxRate": 1
         }
       ],
-      "totalTax": 220150000000
+      "totalTax": 0
+    },
+    {
+      "id": "e09b9289-735f-40cf-a278-6133e3c6d308",
+      "name": "Building",
+      "population": 84299500,
+      "popPercent": 0.3,
+      "color": "#00C49F",
+      "levyTypes": [
+        {
+          "key": "checking",
+          "category": "asset",
+          "dollars": 8000,
+          "taxRate": 0.002
+        },
+        {
+          "key": "savings",
+          "category": "asset",
+          "dollars": 30000,
+          "taxRate": 0.005
+        },
+        {
+          "key": "overseas",
+          "category": "asset",
+          "dollars": 0,
+          "taxRate": 0.01
+        },
+        {
+          "key": "vacant_property",
+          "category": "asset",
+          "dollars": 0,
+          "taxRate": 0.1
+        },
+        {
+          "key": "business_debt",
+          "category": "debt",
+          "dollars": 5000,
+          "taxRate": 0.1
+        },
+        {
+          "key": "personal_debt",
+          "category": "debt",
+          "dollars": 8000,
+          "taxRate": 0.06
+        },
+        {
+          "key": "student_debt",
+          "category": "debt",
+          "dollars": 15000,
+          "taxRate": 0.5
+        },
+        {
+          "key": "health_debt",
+          "category": "debt",
+          "dollars": 2000,
+          "taxRate": 1
+        }
+      ],
+      "totalTax": 0
     },
     {
       "id": "6eef75e3-3296-4930-8913-3ab2ad9e325b",
@@ -361,16 +445,10 @@
           "taxRate": 0.005
         },
         {
-          "key": "occupied_property",
-          "category": "asset",
-          "dollars": 0,
-          "taxRate": 0.001
-        },
-        {
           "key": "vacant_property",
           "category": "asset",
           "dollars": 0,
-          "taxRate": 0.03
+          "taxRate": 0.1
         },
         {
           "key": "business_debt",
@@ -388,82 +466,18 @@
           "key": "student_debt",
           "category": "debt",
           "dollars": 5000,
-          "taxRate": 0.06
+          "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
           "dollars": 2000,
-          "taxRate": 0.04
-        }
-      ],
-      "totalTax": 0
-    },
-    {
-      "id": "e09b9289-735f-40cf-a278-6133e3c6d308",
-      "name": "Building",
-      "population": 84300000,
-      "popPercent": 0.3,
-      "color": "#00C49F",
-      "levyTypes": [
-        {
-          "key": "checking",
-          "category": "asset",
-          "dollars": 8000,
-          "taxRate": 0.002
-        },
-        {
-          "key": "savings",
-          "category": "asset",
-          "dollars": 30000,
-          "taxRate": 0.005
-        },
-        {
-          "key": "overseas",
-          "category": "asset",
-          "dollars": 0,
-          "taxRate": 0.01
-        },
-        {
-          "key": "occupied_property",
-          "category": "asset",
-          "dollars": 150000,
-          "taxRate": 0.003
-        },
-        {
-          "key": "vacant_property",
-          "category": "asset",
-          "dollars": 0,
-          "taxRate": 0.05
-        },
-        {
-          "key": "business_debt",
-          "category": "debt",
-          "dollars": 5000,
-          "taxRate": 0.1
-        },
-        {
-          "key": "personal_debt",
-          "category": "debt",
-          "dollars": 8000,
-          "taxRate": 0.06
-        },
-        {
-          "key": "student_debt",
-          "category": "debt",
-          "dollars": 15000,
-          "taxRate": 0.05
-        },
-        {
-          "key": "health_debt",
-          "category": "debt",
-          "dollars": 2000,
-          "taxRate": 0.03
+          "taxRate": 1
         }
       ],
       "totalTax": 0
     }
   ],
-  "totalTaxRevenue": 6360150000000,
-  "taxBalancePercentage": 100.95476190476191
+  "totalTaxRevenue": 6555400000000,
+  "taxBalancePercentage": 104.05396825396824
 }

@@ -103,6 +103,14 @@ export const calculateNetWorth = (bracket: TaxBracketData): number => {
     return sum * bracket.population;
 };
 
+/**
+ * Calculates the total net worth across all brackets.
+ * @param brackets - Array of tax bracket data
+ * @returns Combined net worth of all brackets
+ */
+export const calculateTotalNetWorth = (brackets: TaxBracketData[]): number => {
+    return brackets.reduce((sum, bracket) => sum + calculateNetWorth(bracket), 0);
+};
 
 /**
  * Calculates the total tax for a bracket.

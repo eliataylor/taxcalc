@@ -6,21 +6,21 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    InputAdornment,
     Typography,
+    InputAdornment,
     MenuItem,
     TextField,
     Tooltip,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {BudgetTargetProps} from '../../types';
+import {NetWorthTargetProps} from '../../types';
 import {formatPopulation} from '../../utils/formatters.ts';
-import {BUDGET_TARGETS} from '../../data/definitions.ts';
+import {MONEY_SUPPLY_REFS} from '../../data/definitions.ts';
 
 const CUSTOM_ID = '__custom__';
 
-const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onValueChange, onMetaChange}) => {
-    const matchedPreset = BUDGET_TARGETS.find(t => t.value === val);
+const NetWorthTarget: React.FC<NetWorthTargetProps> = ({val, name, description, onValueChange, onMetaChange}) => {
+    const matchedPreset = MONEY_SUPPLY_REFS.find(r => r.value === val);
     const [selectedId, setSelectedId] = useState(matchedPreset?.id ?? CUSTOM_ID);
     const [modalOpen, setModalOpen] = useState(false);
     const [customName, setCustomName] = useState(name ?? '');
@@ -28,7 +28,7 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
     const [customValue, setCustomValue] = useState<string>(val.toString());
 
     useEffect(() => {
-        const preset = BUDGET_TARGETS.find(t => t.value === val);
+        const preset = MONEY_SUPPLY_REFS.find(r => r.value === val);
         if (preset) {
             setSelectedId(preset.id);
         }
@@ -43,10 +43,10 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
             setCustomDescription(description ?? '');
             setModalOpen(true);
         } else {
-            const target = BUDGET_TARGETS.find(t => t.id === id);
-            if (target) {
-                onValueChange?.(target.value);
-                onMetaChange?.(target.name, target.description ?? '');
+            const ref = MONEY_SUPPLY_REFS.find(r => r.id === id);
+            if (ref) {
+                onValueChange?.(ref.value);
+                onMetaChange?.(ref.name, ref.description ?? '');
             }
         }
     };
@@ -78,21 +78,21 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
             <TextField
-                label="Budget Target"
+                label="Net Worth Target"
                 select
-                id="budget-target"
+                id="net-worth-target"
                 value={selectedId}
                 onChange={handlePresetChange}
                 fullWidth
                 size="small"
                 helperText={displayDescription}
             >
-                {BUDGET_TARGETS.map(target => (
-                    <MenuItem key={target.id} value={target.id}>
+                {MONEY_SUPPLY_REFS.map(ref => (
+                    <MenuItem key={ref.id} value={ref.id}>
                         <Box sx={{display: 'flex', alignItems: 'center', gap: 0.5, width: '100%'}}>
-                            {target.name} <Typography variant="caption" color="primary">(${formatPopulation(target.value)})</Typography>
-                            {target.description && (
-                                <Tooltip title={target.description} placement="right" arrow>
+                            {ref.name} <Typography variant="caption" color="primary">(${formatPopulation(ref.value)})</Typography>
+                            {ref.description && (
+                                <Tooltip title={ref.description} placement="right" arrow>
                                     <InfoOutlinedIcon sx={{fontSize: 14, color: 'text.disabled', ml: 'auto', cursor: 'help'}}/>
                                 </Tooltip>
                             )}
@@ -105,7 +105,7 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
             </TextField>
 
             <Dialog open={modalOpen} onClose={handleCancelCustom} maxWidth="xs" fullWidth>
-                <DialogTitle>Custom Budget Target</DialogTitle>
+                <DialogTitle>Custom Net Worth Target</DialogTitle>
                 <DialogContent sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important'}}>
                     <TextField
                         label="Name"
@@ -113,7 +113,7 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
                         onChange={e => setCustomName(e.target.value)}
                         fullWidth
                         size="small"
-                        placeholder="e.g. State + Federal Budget"
+                        placeholder="e.g. Household Net Worth Only"
                     />
                     <TextField
                         label="Description"
@@ -123,7 +123,7 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
                         size="small"
                         multiline
                         minRows={2}
-                        placeholder="Explain what this target represents"
+                        placeholder="Explain what this figure represents"
                     />
                     <TextField
                         label="Amount"
@@ -154,4 +154,4 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
     );
 };
 
-export default BudgetTarget;
+export default NetWorthTarget;
