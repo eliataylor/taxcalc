@@ -201,7 +201,7 @@ const TaxBracketCondensed: React.FC<TaxBracketCondensedProps> = ({
                         <Typography variant="body2" sx={{fontWeight: 600}}>
                             {formatMoney(netWorth / pop, {notation: 'compact'})} per person
                             <Typography component="span" variant="caption" color="text.secondary" sx={{ml: 0.5}}>
-                            (${formatPopulation(netWorth)} for population)
+                            ({formatMoney(netWorth, {notation: 'compact'})} total)
                             </Typography>
                         </Typography>
                     </Box>
@@ -210,7 +210,7 @@ const TaxBracketCondensed: React.FC<TaxBracketCondensedProps> = ({
                         <Typography variant="body2" sx={{fontWeight: 600, color: bracket.color}}>
                         {formatMoney(tax / pop, {notation: 'compact'})} per person 
                             <Typography component="span" variant="caption" color="text.secondary" sx={{ml: 0.5}}>
-                            (${formatPopulation(tax)} for population)
+                            ({formatMoney(tax, {notation: 'compact'})} total)
                             </Typography>
                         </Typography>
                     </Box>

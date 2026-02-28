@@ -2,17 +2,22 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {LevyTypeDefinition, PersistedState, SavedScenario, TaxBracketData} from '../types';
 import {
+    BUDGET_TARGETS,
+    CENSUS_FIGURES,
+    DATA_MODELS,
     DEFAULT_BRACKETS,
     DEFAULT_BUDGET_TARGET,
     DEFAULT_BUDGET_TARGET_NAME,
     DEFAULT_BUDGET_TARGET_DESCRIPTION,
     DEFAULT_LEVY_TYPES,
+    DEFAULT_MODEL_ID,
     DEFAULT_NET_WORTH_TARGET,
     DEFAULT_NET_WORTH_TARGET_NAME,
     DEFAULT_NET_WORTH_TARGET_DESCRIPTION,
     DEFAULT_POPULATION,
     DEFAULT_POPULATION_NAME,
     DEFAULT_POPULATION_DESCRIPTION,
+    MONEY_SUPPLY_REFS,
 } from '../data/definitions.ts';
 
 const STATE_KEY = 'taxcalc_state';
@@ -49,6 +54,7 @@ function writeScenarios(scenarios: SavedScenario[]): void {
 export function usePersistedState() {
     const [isLoading, setIsLoading] = useState(true);
     const [isStale, setIsStale] = useState(false);
+    const [modelId, setModelIdRaw] = useState(DEFAULT_MODEL_ID);
     const [population, setPopulationRaw] = useState(DEFAULT_POPULATION);
     const [populationName, setPopulationNameRaw] = useState(DEFAULT_POPULATION_NAME);
     const [populationDescription, setPopulationDescriptionRaw] = useState(DEFAULT_POPULATION_DESCRIPTION);
@@ -70,6 +76,7 @@ export function usePersistedState() {
     }, []);
 
     const stateRef = useRef<PersistedState>({
+        modelId: DEFAULT_MODEL_ID,
         population: DEFAULT_POPULATION,
         populationName: DEFAULT_POPULATION_NAME,
         populationDescription: DEFAULT_POPULATION_DESCRIPTION,
@@ -91,6 +98,7 @@ export function usePersistedState() {
                 setIsStale(true);
             }
             const target = saved.budgetTarget ?? saved.moneySupply ?? DEFAULT_BUDGET_TARGET;
+            setModelIdRaw(saved.modelId ?? DEFAULT_MODEL_ID);
             setPopulationRaw(saved.population);
             setPopulationNameRaw(saved.populationName ?? DEFAULT_POPULATION_NAME);
             setPopulationDescriptionRaw(saved.populationDescription ?? DEFAULT_POPULATION_DESCRIPTION);
@@ -103,6 +111,7 @@ export function usePersistedState() {
             setLevyTypeDefsRaw(saved.levyTypeDefs ?? DEFAULT_LEVY_TYPES);
             setBracketsRaw(saved.brackets);
             stateRef.current = {
+                modelId: saved.modelId ?? DEFAULT_MODEL_ID,
                 population: saved.population,
                 populationName: saved.populationName ?? DEFAULT_POPULATION_NAME,
                 populationDescription: saved.populationDescription ?? DEFAULT_POPULATION_DESCRIPTION,
@@ -187,6 +196,7 @@ export function usePersistedState() {
 
     const loadScenario = useCallback((data: PersistedState) => {
         const target = data.budgetTarget ?? data.moneySupply ?? DEFAULT_BUDGET_TARGET;
+        if (data.modelId) setModelIdRaw(data.modelId);
         setPopulationRaw(data.population);
         setPopulationNameRaw(data.populationName ?? DEFAULT_POPULATION_NAME);
         setPopulationDescriptionRaw(data.populationDescription ?? DEFAULT_POPULATION_DESCRIPTION);
@@ -199,6 +209,7 @@ export function usePersistedState() {
         setLevyTypeDefsRaw(data.levyTypeDefs ?? DEFAULT_LEVY_TYPES);
         setBracketsRaw(data.brackets);
         stateRef.current = {
+            modelId: data.modelId ?? stateRef.current.modelId,
             population: data.population,
             populationName: data.populationName ?? DEFAULT_POPULATION_NAME,
             populationDescription: data.populationDescription ?? DEFAULT_POPULATION_DESCRIPTION,
@@ -220,8 +231,37 @@ export function usePersistedState() {
         setScenarios(updated);
     }, []);
 
+    const loadModel = useCallback((id: string) => {
+        const model = DATA_MODELS.find(m => m.id === id);
+        if (!model) return;
+        const s = model.scenario;
+
+        const popPreset = CENSUS_FIGURES.find(f => f.value === s.population);
+        const budgetPreset = BUDGET_TARGETS.find(t => t.value === s.budgetTarget);
+        const nwRef = MONEY_SUPPLY_REFS.find(r => r.id === model.defaultNetWorthRefId)
+            ?? MONEY_SUPPLY_REFS[0];
+
+        const data: PersistedState = {
+            modelId: id,
+            population: s.population,
+            populationName: popPreset?.name ?? 'Custom',
+            populationDescription: popPreset?.description ?? '',
+            budgetTarget: s.budgetTarget,
+            budgetTargetName: budgetPreset?.name ?? 'Custom',
+            budgetTargetDescription: budgetPreset?.description ?? '',
+            netWorthTarget: nwRef.value,
+            netWorthTargetName: nwRef.name,
+            netWorthTargetDescription: nwRef.description ?? '',
+            levyTypeDefs: s.levyTypeDefs,
+            brackets: (s.brackets as TaxBracketData[]).sort((a, b) => a.population - b.population),
+        };
+        loadScenario(data);
+        setIsStale(false);
+    }, [loadScenario]);
+
     const resetToDefaults = useCallback(() => {
         const defaults: PersistedState = {
+            modelId: DEFAULT_MODEL_ID,
             population: DEFAULT_POPULATION,
             populationName: DEFAULT_POPULATION_NAME,
             populationDescription: DEFAULT_POPULATION_DESCRIPTION,
@@ -244,6 +284,7 @@ export function usePersistedState() {
     }, [scheduleSave]);
 
     return {
+        modelId,
         population,
         populationName,
         populationDescription,
@@ -255,6 +296,7 @@ export function usePersistedState() {
         netWorthTargetDescription,
         levyTypeDefs,
         brackets,
+        loadModel,
         setPopulation,
         setPopulationMeta,
         setBudgetTarget,

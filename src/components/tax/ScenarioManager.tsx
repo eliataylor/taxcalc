@@ -22,10 +22,7 @@ import {v4 as uuidv4} from 'uuid';
 import {PersistedState, SavedScenario, ScenarioManagerProps} from '../../types';
 
 const ScenarioManager: React.FC<ScenarioManagerProps> = ({
-    population,
-    budgetTarget,
-    levyTypeDefs,
-    brackets,
+    currentState,
     totalTaxRevenue,
     taxBalancePercentage,
     scenarios,
@@ -51,41 +48,38 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
     const handleSave = () => {
         if (!scenarioName.trim()) return;
         onSave(scenarioName.trim());
-        showAlert(`Scenario "${scenarioName}" saved.`);
+        showAlert(`Model "${scenarioName}" saved.`);
         setSaveOpen(false);
         setScenarioName('');
     };
 
     const handleLoad = (scenario: SavedScenario) => {
         onLoad(scenario);
-        showAlert(`Scenario "${scenario.name}" loaded.`);
+        showAlert(`Model "${scenario.name}" loaded.`);
         setLoadOpen(false);
     };
 
     const handleDelete = (scenario: SavedScenario) => {
         onDelete(scenario.id);
-        showAlert(`Scenario "${scenario.name}" deleted.`, 'info');
+        showAlert(`Model "${scenario.name}" deleted.`, 'info');
     };
 
     const handleExportFile = () => {
         try {
             const data: SavedScenario = {
+                ...currentState,
                 id: uuidv4(),
                 name: scenarioName.trim() || `Export ${new Date().toLocaleDateString()}`,
                 date: new Date().toISOString(),
-                population,
-                budgetTarget,
-                levyTypeDefs,
-                brackets,
                 totalTaxRevenue,
                 taxBalancePercentage,
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const filename = data.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
             saveAs(blob, `${filename}.json`);
-            showAlert('Scenario exported to file.');
+            showAlert('Model exported to file.');
         } catch {
-            showAlert('Failed to export scenario.', 'error');
+            showAlert('Failed to export model.', 'error');
         }
     };
 
@@ -98,18 +92,21 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
             const data = JSON.parse(text) as PersistedState;
 
             if (!data.brackets || !Array.isArray(data.brackets)) {
-                throw new Error('Invalid scenario: missing brackets array');
+                throw new Error('Invalid model: missing brackets array');
             }
             if (typeof data.population !== 'number') {
-                throw new Error('Invalid scenario: population is not a number');
+                throw new Error('Invalid model: population is not a number');
             }
             if (typeof data.budgetTarget !== 'number' && typeof data.moneySupply !== 'number') {
-                throw new Error('Invalid scenario: budgetTarget is not a number');
+                throw new Error('Invalid model: budgetTarget is not a number');
+            }
+            if (typeof data.netWorthTarget !== 'number' && data.netWorthTarget !== undefined) {
+                throw new Error('Invalid model: netWorthTarget is not a number');
             }
 
             onLoad(data);
             const name = (data as SavedScenario).name || file.name;
-            showAlert(`Scenario "${name}" imported from file.`);
+            showAlert(`Model "${name}" imported from file.`);
         } catch (err) {
             showAlert(`Import failed: ${(err as Error).message}`, 'error');
         }
@@ -122,26 +119,26 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
             <Button variant="outlined" size="small" onClick={() => {
                 setLoadOpen(true);
             }}>
-                Scenarios
+                Import
             </Button>
             <Button variant="outlined" size="small" onClick={() => {
-                setScenarioName(`Tax Scenario ${new Date().toLocaleDateString()}`);
+                setScenarioName(`Tax Model ${new Date().toLocaleDateString()}`);
                 setSaveOpen(true);
             }}>
-                Save
+                Export
             </Button>
-            <Button variant="outlined" size="small" color="warning" onClick={onReset}>
+            <Button variant="outlined" size="small" color="secondary" sx={{ color: 'secondary.light' }} onClick={onReset}>
                 Reset
             </Button>
 
             {/* Save dialog */}
             <Dialog open={saveOpen} onClose={() => setSaveOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Save Scenario</DialogTitle>
+                <DialogTitle>Save Model</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Scenario Name"
+                        label="Model Name"
                         fullWidth
                         value={scenarioName}
                         onChange={e => setScenarioName(e.target.value)}
@@ -162,7 +159,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
 
             {/* Load dialog */}
             <Dialog open={loadOpen} onClose={() => setLoadOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Load Scenario</DialogTitle>
+                <DialogTitle>Load Model</DialogTitle>
                 <DialogContent>
                     {scenarios.length > 0 ? (
                         <List dense>

@@ -78,7 +78,7 @@ const BudgetTarget: React.FC<BudgetTargetProps> = ({val, name, description, onVa
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
             <TextField
-                label="Budget Target"
+                label="Target Tax Revenue"
                 select
                 id="budget-target"
                 value={selectedId}

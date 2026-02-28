@@ -78,7 +78,7 @@ const NetWorthTarget: React.FC<NetWorthTargetProps> = ({val, name, description, 
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
             <TextField
-                label="Net Worth Target"
+                label="Maximum Net Worth To Tax"
                 select
                 id="net-worth-target"
                 value={selectedId}

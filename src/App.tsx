@@ -9,11 +9,15 @@ import VariablesPage from './pages/VariablesPage';
 const theme = createTheme({
     palette: {
         mode: 'dark',
+        background: {
+            default: '#000000',
+            paper: '#121212',
+        },
         primary: {
-            main: '#4c99f1',
+            main: '#BB133E',
         },
         secondary: {
-            main: '#f65b0f',
+            main: '#0A3161',
         },
         error: {
             main: '#f44336',

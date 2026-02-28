@@ -60,16 +60,19 @@ const HomePage: React.FC = () => {
                     component="p"
                     sx={{ fontStyle: 'italic', textAlign: 'center', mb: 2 }}
                 >
-                    What if taxes were based on <strong>Net Worth</strong> instead of Annual Income?
+                    What if taxes were based on <strong>Net Worth</strong> instead of <strong>Annual Income</strong>?
                 </Typography>
 
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
-                    This is an experimental thought exercise and tool to find a formula that feels fair and balances our federal budget. The current
-                    U.S. tax code is roughly 7,000 pages long. This is a tool searching for a simpler formula that can balance the federal budget
-                    against the total Money Supply rather how much people made last year.
+                {/* <Typography variant="body2" color="text.secondary" >
+                    The current U.S. tax code is roughly 7,000 pages with infinite loopholes and little chance of supporting
+                    our growing needs for infrastructure, education, healthcare, jobs, and a social safety net.
+                </Typography> */}
+                <Typography variant="body2" sx={{ textAlign: 'center' }}>
+                    This is a experimental tool to find a simpler formula that can balance our federal budget while encouraging the
+                    circulation of wealth and domestic spending and investment.
                 </Typography>
 
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center" sx={{ mb: 2 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center" sx={{ my: 2 }}>
                     <Button
                         component={RouterLink}
                         to="/calculator"
@@ -79,7 +82,7 @@ const HomePage: React.FC = () => {
                         startIcon={<AccountBalance />}
                         sx={{ textTransform: 'none' }}
                     >
-                        Explore Tax Model
+                        Explore Tax Models
                     </Button>
                     <Button
                         component={RouterLink}
@@ -90,7 +93,7 @@ const HomePage: React.FC = () => {
                         startIcon={<CalculateIcon />}
                         sx={{ textTransform: 'none' }}
                     >
-                        Customize Tax Model
+                        Create Your Tax Model
                     </Button>
                 </Stack>
 
@@ -137,15 +140,19 @@ const HomePage: React.FC = () => {
             <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Functions fontSize="small" /> Defining Net Worth
             </Typography>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+                The goal of this system is to tax who ever is hording money instead of circulating it. That has to include every corporation and individual &mdash; including minors, who would file through a legal guardian.
+                Our current working definition of Net Worth is:
+            </Typography>
+
             <Typography variant="subtitle1" sx={{ textAlign: 'center', fontWeight: 600, mb: 1.5 }}>
                 <em>Net Worth</em> = Liquid Capital + Reserved Capital + Idle Property &minus; Debts & Interests Owed
             </Typography>
 
-            <Typography variant="body1" sx={{ mb: 1 }}>
-                The goal is to tax who ever is hording money instead of circulating it. That has to include every corporation and individual &mdash; including minors, who would file through a legal guardian.
-            </Typography>
+ 
             <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                Disagree? The whole point of this site is to offer tools for you can <RouterLink to="/calculator?view=edit">create your own</RouterLink> rules and tax brackets that balance our federal budget. The tool provides warnings when Tax Brackets do not sum to your target Population or Total Net Worth.
+                Disagree? The whole point of this site is to offer tools for you can <RouterLink to="/calculator?view=edit">create your own</RouterLink> rules and tax brackets that balance, any target federal budget, based on any total money supply. 
+                The tool provides warnings when Tax Brackets do not sum to your target Population, Federal Budget, or Total Net Worth.
             </Typography>
 
             <Button

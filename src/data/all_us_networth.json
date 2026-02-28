@@ -1,7 +1,7 @@
 {
-  "id": "4ec154df-eaf9-428c-8dae-d62013912c8e",
+  "id": "c0380ab6-a9fc-46e3-9e43-7b18793c8498",
   "name": "Tax Model 2/27/2026",
-  "date": "2026-02-28T01:38:16.668Z",
+  "date": "2026-02-27T23:43:07.813Z",
   "population": 347300000,
   "budgetTarget": 6300000000000,
   "levyTypeDefs": [
@@ -10,7 +10,7 @@
       "name": "Liquid Capital",
       "category": "asset",
       "description": "Immediately accessible capital including checking accounts, money market accounts, cryptocurrency wallets, and brokerage cash. Proceeds from selling assets (stocks, business equity, IP, tangible goods) enter this category once converted to liquid form.",
-      "rationale": "Lowest asset rate — liquid capital circulates actively in the domestic economy, which is the behavior we want to reward. Cryptocurrency is included because on-chain wallets function as immediately spendable capital. Tangible purchases (vehicles, art, goods) are not taxed separately — buying them already circulated wealth. Business equity and IP are not taxed as holdings — they only become taxable when converted to liquid capital through a sale or distribution. Trust-held liquid assets are attributed to the beneficiary or executor authorized to borrow, collect, or sell. Holdings basis: S&P 500 companies hold ~$2.5T in cash and short-term investments (Morgan Stanley, 2024); including financials ~$5T total across 500 companies (~$10B avg). Individual liquid balances sourced from the Federal Reserve SCF 2022 — top 10% avg checking ~$76K/household, bottom 20% avg ~$3.3K (WalletHub/Fed, 2024).",
+      "rationale": "Lowest asset rate — liquid capital circulates actively in the domestic economy, which is the behavior we want to reward. Cryptocurrency is included because on-chain wallets function as immediately spendable capital. Tangible purchases (vehicles, art, goods) are not taxed separately — buying them already circulated wealth. Business equity and IP are not taxed as holdings — they only become taxable when converted to liquid capital through a sale or distribution. Trust-held liquid assets are attributed to the beneficiary or executor authorized to borrow, collect, or sell.",
       "defaultRate": 0.004
     },
     {
@@ -18,7 +18,7 @@
       "name": "Reserved Capital",
       "category": "asset",
       "description": "Capital with restricted access or early withdrawal penalties, including savings accounts, CDs, IRAs, 401(k)s, pension funds, and life insurance cash value.",
-      "rationale": "Moderate rate — reserved capital is domestic but not actively circulating. Rate sits between liquid (rewarded) and foreign (penalized). Retirement accounts and life insurance cash value are included because excluding them creates obvious shelters. Trust-held reserved assets follow the same pass-through attribution as liquid capital. Holdings basis: Total U.S. retirement assets ~$40T (ICI, 2024). Top 1% holds ~9% of assets in retirement/insurance (~$1.5M/person). 90th–99th percentile averages ~$400K in reserved capital, driven by 401(k) and IRA balances. Corporate reserved capital includes long-term investments, pension fund assets, and restricted cash (~$12B avg per Fortune 500 company, sourced from S&P 500 aggregate balance sheet data via GuruFocus, Q4 2024).",
+      "rationale": "Moderate rate — reserved capital is domestic but not actively circulating. Rate sits between liquid (rewarded) and foreign (penalized). Retirement accounts and life insurance cash value are included because excluding them creates obvious shelters. Trust-held reserved assets follow the same pass-through attribution as liquid capital.",
       "defaultRate": 0.01
     },
     {
@@ -26,7 +26,7 @@
       "name": "Capital Flight",
       "category": "asset",
       "description": "Taxes offshoring of US earnings to foreign assets.",
-      "rationale": "Punitive rate — discourages offshoring U.S. earnings to foreign jurisdictions. Fortune 500 companies hold ~$2.6T in offshore profits to avoid U.S. taxation, saving an estimated $767B in federal taxes (ITEP, 2023). Top holders include Apple ($158B offshore, 89% of cash), Microsoft ($82B), and GE ($62B) (Statista). Individual offshore wealth estimated at $5–7T for all U.S. persons, concentrated in the top 1%. Per-bracket amounts: ~$5B/company for Fortune 500, ~$800K/person for top 1%, ~$25K for 90th–99th percentile. Lower brackets have negligible overseas holdings.",
+      "rationale": "Ignore the little things like an amazon purchase that goes to China for now. Think about preventing corporations selling in the US market then parking their earnings overseas.",
       "defaultRate": 0.025
     },
     {
@@ -34,7 +34,7 @@
       "name": "Idle Property",
       "category": "asset",
       "description": "Real estate not serving its zoned purpose or operating well below capacity — effectively functioning as a store of value. Includes completely vacant land or buildings, properties with token occupancy designed to game a lower rate, and seasonal properties used below a utilization threshold.",
-      "rationale": "Significantly higher than productive property rate to make land speculation expensive and push property back into productive use, directly addressing housing shortages. The gap between this rate and the Productive Property rate is the core incentive. Holdings basis: U.S. commercial real estate investable universe is ~$26.8T (Clarion Partners, 2025). Distressed CRE reached $116.4B in Q1 2025, with office properties nearly half (MSCI). Corporate idle property estimated at ~$500M avg per Fortune 500 company (~$250B total). Ultra-wealthy individuals hold ~$250K avg in idle/seasonal property per person; 90th–99th percentile ~$40K avg (second homes, investment properties below utilization thresholds).",
+      "rationale": "Significantly higher than productive property rate to make land speculation expensive and push property back into productive use, directly addressing housing shortages. The gap between this rate and the Productive Property rate is the core incentive.",
       "defaultRate": 0.1
     },
     {
@@ -42,7 +42,7 @@
       "name": "Business Debt",
       "category": "debt",
       "description": "Outstanding loans, credit lines, bonds, or mortgage debt on commercial and investment property held for business operations. All debts can only be deducted once.",
-      "rationale": "Highest deduction rate — business debt fuels economic activity and job creation. Holdings basis: U.S. nonfinancial corporate debt reached $13.95T in Q1 2025, ~46% of GDP (S&P Global). S&P 500 total liabilities: ~$36T (GuruFocus, Q4 2024). Fortune 500 business debt set at $5B/company — proportional to taxed asset categories only, since most corporate assets (PP&E, goodwill, inventory) are untaxed in this model. Individual business debt estimated from SCF data: top 1% ~$250K/person, 90th–99th ~$50K, declining through lower brackets.",
+      "rationale": "Highest deduction rate — business debt fuels economic activity and job creation.",
       "defaultRate": 0.08
     },
     {
@@ -50,7 +50,7 @@
       "name": "Personal Debt",
       "category": "debt",
       "description": "Consumer credit card balances, auto loans, residential mortgage debt, and other personal liabilities. All debts can only be deducted once.",
-      "rationale": "Moderate deduction for general consumer obligations. Holdings basis: Total U.S. household debt $18.59T as of Q3 2025 — mortgages $13.07T, auto loans $1.66T, credit cards $1.23T, HELOC $422B (NY Fed Household Debt Report, Nov 2025). Average household debt ~$150K. Mortgage debt dominates personal debt across all brackets; top 1% avg ~$300K/person, 90th–99th ~$100K, 70th–90th ~$60K. Lower brackets carry proportionally more debt relative to assets.",
+      "rationale": "Moderate deduction for general consumer obligations.",
       "defaultRate": 0.04
     },
     {
@@ -58,7 +58,7 @@
       "name": "Student Debt",
       "category": "debt",
       "description": "Outstanding educational loans (federal and private). All debts can only be deducted once.",
-      "rationale": "Deduction rate scaled by bracket — lower earners get more relief since education debt disproportionately burdens early-career workers. Holdings basis: Total U.S. student loan debt ~$1.65T across 40M borrowers (~$38K avg per borrower). Per-borrower debt by income: bottom 20% ~$28.3K, top 10% ~$80.7K (Business Insider/Fed SCF, 2025). Per-person averages are much lower because only ~15% of adults carry student debt. Graduate degree holders carry 56% of total student debt despite being 14% of adults over 25 (Education Data Initiative).",
+      "rationale": "Deduction rate scaled by bracket — lower earners get more relief since education debt disproportionately burdens early-career workers.",
       "defaultRate": 0.5
     },
     {
@@ -66,7 +66,7 @@
       "name": "Health Debt",
       "category": "debt",
       "description": "Unpaid medical bills, hospital balances, and health-related loans. All debts can only be deducted once.",
-      "rationale": "Full deduction — subsidizes health care and prevents medical bankruptcy. Holdings basis: ~$140–220B in total U.S. medical debt; ~36% of households carry some medical debt (CreditNinja/KFF, 2024). Average household medical debt ~$15,670 for those affected, but most balances are under $500. Low-income households face 48% incidence vs 27% for households earning >$100K. Uninsured carry ~65% more medical debt than insured. Per-person averages: Underwater ~$2K, Building ~$1K, Established ~$500. Negligible for top brackets.",
+      "rationale": "A way to subsidize health care and keep our current system from bankrupting people.",
       "defaultRate": 1
     }
   ],
@@ -81,31 +81,31 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 13000000000,
-          "taxRate": 0.085
+          "dollars": 56360000000,
+          "taxRate": 0.03
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 16770000000,
-          "taxRate": 0.06
+          "dollars": 75000000000,
+          "taxRate": 0.02
         },
         {
           "key": "overseas",
           "category": "asset",
-          "dollars": 6800000000,
-          "taxRate": 0.13
+          "dollars": 10000000000,
+          "taxRate": 0.03
         },
         {
           "key": "vacant_property",
           "category": "asset",
-          "dollars": 700000000,
-          "taxRate": 0.18
+          "dollars": 1000000000,
+          "taxRate": 0.05
         },
         {
           "key": "business_debt",
           "category": "debt",
-          "dollars": 5000000000,
+          "dollars": 0,
           "taxRate": 0.08
         },
         {
@@ -127,7 +127,7 @@
           "taxRate": 1
         }
       ],
-      "totalTax": 1360600000000
+      "totalTax": 1770400000000
     },
     {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
@@ -139,43 +139,43 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 950000,
-          "taxRate": 0.07
+          "dollars": 2000000,
+          "taxRate": 0.01
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 2000000,
-          "taxRate": 0.17
+          "dollars": 3000000,
+          "taxRate": 0.025
         },
         {
           "key": "overseas",
           "category": "asset",
-          "dollars": 1100000,
-          "taxRate": 0.4
+          "dollars": 5000000,
+          "taxRate": 0.07
         },
         {
           "key": "vacant_property",
           "category": "asset",
-          "dollars": 340000,
-          "taxRate": 0.6
+          "dollars": 5000000,
+          "taxRate": 0.15
         },
         {
           "key": "business_debt",
           "category": "debt",
-          "dollars": 250000,
+          "dollars": 2000000,
           "taxRate": 0.04
         },
         {
           "key": "personal_debt",
           "category": "debt",
-          "dollars": 300000,
+          "dollars": 0,
           "taxRate": 0.02
         },
         {
           "key": "student_debt",
           "category": "debt",
-          "dollars": 1500,
+          "dollars": 0,
           "taxRate": 0.5
         },
         {
@@ -185,7 +185,7 @@
           "taxRate": 1
         }
       ],
-      "totalTax": 3101250000000
+      "totalTax": 3345000000000
     },
     {
       "id": "ed04e7d9-99fe-4a0b-aeb4-c22dd0b03347",
@@ -197,53 +197,53 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 110000,
-          "taxRate": 0.02
+          "dollars": 200000,
+          "taxRate": 0.008
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 545000,
-          "taxRate": 0.05
+          "dollars": 800000,
+          "taxRate": 0.015
         },
         {
           "key": "overseas",
           "category": "asset",
-          "dollars": 34000,
-          "taxRate": 0.18
+          "dollars": 100000,
+          "taxRate": 0.05
         },
         {
           "key": "vacant_property",
           "category": "asset",
-          "dollars": 55000,
-          "taxRate": 0.28
+          "dollars": 200000,
+          "taxRate": 0.12
         },
         {
           "key": "business_debt",
           "category": "debt",
-          "dollars": 50000,
+          "dollars": 100000,
           "taxRate": 0.06
         },
         {
           "key": "personal_debt",
           "category": "debt",
-          "dollars": 100000,
+          "dollars": 20000,
           "taxRate": 0.03
         },
         {
           "key": "student_debt",
           "category": "debt",
-          "dollars": 4000,
+          "dollars": 0,
           "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
-          "dollars": 200,
+          "dollars": 0,
           "taxRate": 1
         }
       ],
-      "totalTax": 1710800000000
+      "totalTax": 1440000000000
     },
     {
       "id": "75ece48e-5aac-4da5-942f-0bf5c3e4c4dd",
@@ -255,7 +255,7 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 550,
+          "dollars": 500,
           "taxRate": 0
         },
         {
@@ -285,19 +285,19 @@
         {
           "key": "personal_debt",
           "category": "debt",
-          "dollars": 8000,
+          "dollars": 6000,
           "taxRate": 0.1
         },
         {
           "key": "student_debt",
           "category": "debt",
-          "dollars": 3000,
+          "dollars": 16000,
           "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
-          "dollars": 2000,
+          "dollars": 4000,
           "taxRate": 1
         }
       ],
@@ -313,37 +313,37 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 34000,
-          "taxRate": 0.015
+          "dollars": 35000,
+          "taxRate": 0.004
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 204000,
-          "taxRate": 0.035
+          "dollars": 175000,
+          "taxRate": 0.01
         },
         {
           "key": "overseas",
           "category": "asset",
-          "dollars": 2700,
-          "taxRate": 0.1
+          "dollars": 10000,
+          "taxRate": 0.025
         },
         {
           "key": "vacant_property",
           "category": "asset",
           "dollars": 0,
-          "taxRate": 0.15
+          "taxRate": 0.1
         },
         {
           "key": "business_debt",
           "category": "debt",
-          "dollars": 10000,
+          "dollars": 15000,
           "taxRate": 0.08
         },
         {
           "key": "personal_debt",
           "category": "debt",
-          "dollars": 60000,
+          "dollars": 12000,
           "taxRate": 0.04
         },
         {
@@ -355,11 +355,11 @@
         {
           "key": "health_debt",
           "category": "debt",
-          "dollars": 500,
+          "dollars": 2000,
           "taxRate": 1
         }
       ],
-      "totalTax": 120400000000.00006
+      "totalTax": 0
     },
     {
       "id": "e09b9289-735f-40cf-a278-6133e3c6d308",
@@ -371,20 +371,20 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 7000,
-          "taxRate": 0.008
+          "dollars": 8000,
+          "taxRate": 0.002
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 34000,
-          "taxRate": 0.02
+          "dollars": 30000,
+          "taxRate": 0.005
         },
         {
           "key": "overseas",
           "category": "asset",
           "dollars": 0,
-          "taxRate": 0.06
+          "taxRate": 0.01
         },
         {
           "key": "vacant_property",
@@ -395,25 +395,25 @@
         {
           "key": "business_debt",
           "category": "debt",
-          "dollars": 2000,
+          "dollars": 5000,
           "taxRate": 0.1
         },
         {
           "key": "personal_debt",
           "category": "debt",
-          "dollars": 35000,
+          "dollars": 8000,
           "taxRate": 0.06
         },
         {
           "key": "student_debt",
           "category": "debt",
-          "dollars": 7000,
+          "dollars": 15000,
           "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
-          "dollars": 1000,
+          "dollars": 2000,
           "taxRate": 1
         }
       ],
@@ -429,20 +429,20 @@
         {
           "key": "checking",
           "category": "asset",
-          "dollars": 3400,
-          "taxRate": 0.003
+          "dollars": 4000,
+          "taxRate": 0.001
         },
         {
           "key": "savings",
           "category": "asset",
-          "dollars": 10800,
-          "taxRate": 0.007
+          "dollars": 12000,
+          "taxRate": 0.002
         },
         {
           "key": "overseas",
           "category": "asset",
           "dollars": 0,
-          "taxRate": 0.04
+          "taxRate": 0.005
         },
         {
           "key": "vacant_property",
@@ -459,25 +459,25 @@
         {
           "key": "personal_debt",
           "category": "debt",
-          "dollars": 15000,
+          "dollars": 4000,
           "taxRate": 0.08
         },
         {
           "key": "student_debt",
           "category": "debt",
-          "dollars": 3500,
+          "dollars": 5000,
           "taxRate": 0.5
         },
         {
           "key": "health_debt",
           "category": "debt",
-          "dollars": 1500,
+          "dollars": 2000,
           "taxRate": 1
         }
       ],
       "totalTax": 0
     }
   ],
-  "totalTaxRevenue": 6293050000000,
-  "taxBalancePercentage": 99.88968253968254
+  "totalTaxRevenue": 6555400000000,
+  "taxBalancePercentage": 104.05396825396824
 }

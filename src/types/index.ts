@@ -141,6 +141,7 @@ export interface HoldingsTaxComparisonChartProps {
  */
 export interface PersistedState {
     buildNumber?: number;
+    modelId?: string;
     population: number;
     populationName?: string;
     populationDescription?: string;
@@ -158,6 +159,19 @@ export interface PersistedState {
 
 
 /**
+ * A built-in data model that provides default brackets, levy types, and top-level assumptions.
+ * Each model represents a different way of slicing U.S. net worth for tax modelling.
+ */
+export interface DataModel {
+    id: string;
+    name: string;
+    description: string;
+    /** Which MONEY_SUPPLY_REFS entry to use as the default net-worth target for this model */
+    defaultNetWorthRefId: string;
+    scenario: SavedScenario;
+}
+
+/**
  * A named saved scenario
  */
 export interface SavedScenario extends PersistedState {
@@ -172,10 +186,7 @@ export interface SavedScenario extends PersistedState {
  * Props for the ScenarioManager component
  */
 export interface ScenarioManagerProps {
-    population: number;
-    budgetTarget: number;
-    levyTypeDefs: LevyTypeDefinition[];
-    brackets: TaxBracketData[];
+    currentState: PersistedState;
     totalTaxRevenue: number;
     taxBalancePercentage: number;
     scenarios: SavedScenario[];
