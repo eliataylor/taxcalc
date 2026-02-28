@@ -144,6 +144,9 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
                         onChange={e => setScenarioName(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleSave()}
                     />
+                    <Box sx={{mt: 2}}>
+                        Email eli@taylormadetraffic.com to add your model to this tool.
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setSaveOpen(false)}>Cancel</Button>
