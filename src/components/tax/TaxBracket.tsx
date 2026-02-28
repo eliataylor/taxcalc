@@ -138,7 +138,7 @@ const TaxBracket: React.FC<TaxBracketProps> = ({
                     </Grid>
 
                     <Grid>
-                        <Typography variant={'subtitle1'} align={'center'} color={bracket.color}><b>Net Worth</b>:
+                        <Typography variant={'subtitle1'} align={'center'} color={bracket.color}><b>Net Wealth</b>:
                             ${formatPopulation(calculateNetWorth(bracket))} /
                             ${formatPopulation(calculateNetWorth(bracket) / pop)} ~per
                             person</Typography>

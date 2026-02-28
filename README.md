@@ -1,8 +1,11 @@
-# Net Worth Tax Lab
+# Net Wealth Tax Lab
 
-> *What if taxes were based on **Net Worth** instead of Annual Income?*
+> *What if taxes were based on **Net Wealth** instead of Annual Income?*
 
-This is an experimental thought exercise — not a policy proposal. The current U.S. tax code is roughly 7,000 pages long. This calculator tries to explore whether a simpler question could do most of the work: *how much do you have?*
+Demo available at [taxcalc.taylormadetraffic.com](https://taxcalc.taylormadetraffic.com)
+
+
+![Screenshot](public/NetWealthTabLab.png)
 
 ---
 
@@ -20,9 +23,9 @@ This is an experimental thought exercise — not a policy proposal. The current 
 
 ---
 
-## Defining Net Worth
+## Defining Net Wealth
 
-The central question is deceptively simple: *what counts?* Our working definition is **Net Worth = Assets − Debts**, applied to every individual — including minors, who would file through a legal guardian. This prevents hiding wealth in non-filing relatives. Each side is broken into categories that can be taxed or deducted at independent rates.
+The central question is deceptively simple: *what counts?* Our working definition is **Net Wealth = Assets − Debts**, applied to every individual — including minors, who would file through a legal guardian. This prevents hiding wealth in non-filing relatives. Each side is broken into categories that can be taxed or deducted at independent rates.
 
 These categories are starting points — you can add, remove, or adjust them in the calculator. The goal is to find a minimal set that's both auditable and hard to game.
 
@@ -59,7 +62,7 @@ Debt deductions are the most dangerous part of this model. Any system that reduc
 - Require domestic, regulated creditors for deductions to apply.
 - Cap total debt deductions as a percentage of gross assets.
 - Net related-party debts (you can't owe yourself).
-- Use declining deduction rates at higher net worth tiers — debt relief matters more to the lower brackets.
+- Use declining deduction rates at higher net wealth tiers — debt relief matters more to the lower brackets.
 
 ---
 
@@ -67,9 +70,9 @@ Debt deductions are the most dangerous part of this model. Any system that reduc
 
 This model raises more questions than it answers. That's the point — it's a thinking tool, not a finished product. Some of the harder ones:
 
-- **Banks and Corporations** — Should entities be taxed on net worth too, or only individuals? Corporate balance sheets are structured very differently from personal ones.
+- **Banks and Corporations** — Should entities be taxed on net wealth too, or only individuals? Corporate balance sheets are structured very differently from personal ones.
 - **Transition** — You can't switch tax systems overnight. What does a 10-year phase-in look like? Would you run both systems in parallel?
-- **Enforcement and Privacy** — A net worth tax requires knowing what people own. How do you balance enforcement with civil liberties? Could zero-knowledge proofs or privacy-preserving audits help?
+- **Enforcement and Privacy** — A net wealth tax requires knowing what people own. How do you balance enforcement with civil liberties? Could zero-knowledge proofs or privacy-preserving audits help?
 - **Capital Flight** — If only one country does this, wealth may simply leave. Is this viable without international coordination?
 - **Asset Transfers** — Universal individual filing closes the simplest loophole — gifting assets to relatives to lower your bracket. But what about transfers to non-relatives, shell entities, or foreign nationals?
 

@@ -7,14 +7,14 @@ export const DATA_MODELS: DataModel[] = [
     {
         id: 'taxable_asset_base',
         name: 'All Cash On Hand',
-        description: 'This is ~36% of U.S. Net Worth that falls into four taxable asset categories: (Liquid Capital, Reserved Capital, Capital Flight, Idle Property). Equities, productive real estate, business equity, and other asset classes are intentionally excluded.',
+        description: 'This is ~36% of U.S. Net Wealth that falls into four taxable asset categories: (Liquid Capital, Reserved Capital, Capital Flight, Idle Property). Equities, productive real estate, business equity, and other asset classes are intentionally excluded.',
         defaultNetWorthRefId: 'taxable_asset_base',
         scenario: taxableAssetBaseScenario as unknown as SavedScenario,
     },
     {
         id: 'all_us_networth',
-        name: 'All U.S. Net Worth',
-        description: 'The full ~$170T of U.S. household and corporate net worth, with bracket holdings scaled proportionally across all asset classes.',
+        name: 'All U.S. Net Wealth',
+        description: 'The full ~$170T of U.S. household and corporate net wealth, with bracket holdings scaled proportionally across all asset classes.',
         defaultNetWorthRefId: 'total_net_worth',
         scenario: allUsNetworthScenario as unknown as SavedScenario,
     },
@@ -53,12 +53,12 @@ export const MONEY_SUPPLY_REFS: BudgetTargetOption[] = [
         id: 'taxable_asset_base',
         name: 'Taxable Asset Base',
         value: 61_200_000_000_000,
-        description: 'Sum of all holdings that fall within our categories. Roughly 36% of total U.S. net worth — the remainder sits in equities, productive real estate, business equity, and other intentionally untaxed asset classes. Derived from S&P 500 balance sheets (GuruFocus Q4 2024), Federal Reserve DFA Q4 2024, and SCF 2022.',
+        description: 'Sum of all holdings that fall within our categories. Roughly 36% of total U.S. net wealth — the remainder sits in equities, productive real estate, business equity, and other intentionally untaxed asset classes. Derived from S&P 500 balance sheets (GuruFocus Q4 2024), Federal Reserve DFA Q4 2024, and SCF 2022.',
     },{
         id: 'total_net_worth',
-        name: 'Total U.S. Net Worth',
+        name: 'Total U.S. Net Wealth',
         value: 170_000_000_000_000,
-        description: 'Estimated total U.S. household and corporate net worth (Federal Reserve Z.1)',
+        description: 'Estimated total U.S. household and corporate net wealth (Federal Reserve Z.1)',
     },
     {
         id: 'm1',

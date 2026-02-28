@@ -87,9 +87,9 @@ export const calculateTotalDebt = (bracket: TaxBracketData): number => {
 };
 
 /**
- * Calculates the net worth for a bracket (assets minus debts).
+ * Calculates the net wealth for a bracket (assets minus debts).
  * @param bracket - Tax bracket data
- * @returns Net worth across the bracket population
+ * @returns net wealth across the bracket population
  */
 export const calculateNetWorth = (bracket: TaxBracketData): number => {
     let sum = 0;
@@ -104,9 +104,9 @@ export const calculateNetWorth = (bracket: TaxBracketData): number => {
 };
 
 /**
- * Calculates the total net worth across all brackets.
+ * Calculates the total net wealth across all brackets.
  * @param brackets - Array of tax bracket data
- * @returns Combined net worth of all brackets
+ * @returns Combined net wealth of all brackets
  */
 export const calculateTotalNetWorth = (brackets: TaxBracketData[]): number => {
     return brackets.reduce((sum, bracket) => sum + calculateNetWorth(bracket), 0);

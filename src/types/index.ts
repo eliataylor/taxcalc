@@ -160,7 +160,7 @@ export interface PersistedState {
 
 /**
  * A built-in data model that provides default brackets, levy types, and top-level assumptions.
- * Each model represents a different way of slicing U.S. net worth for tax modelling.
+ * Each model represents a different way of slicing U.S. net wealth for tax modelling.
  */
 export interface DataModel {
     id: string;

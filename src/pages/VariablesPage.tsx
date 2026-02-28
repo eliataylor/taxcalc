@@ -107,7 +107,7 @@ const VariablesPage: React.FC = () => {
                 Model Variables and Bracket Construction
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{mb: 4}}>
-                This model explores taxation based on <strong>Net Worth</strong> rather than Annual Income.
+                This model explores taxation based on <strong>Net Wealth</strong> rather than Annual Income.
                 Below is a complete reference of all variables, formulas, and constraints used in the calculator.
             </Typography>
 
@@ -163,10 +163,10 @@ const VariablesPage: React.FC = () => {
                 </TableContainer>
             )}
             
-            {/* Section 3: Net Worth Target */}
-            <Typography id="net-worth-target" variant="h6" sx={{mb: 1}}>Net Worth Target</Typography>
+            {/* Section 3: Net Wealth Target */}
+            <Typography id="net-worth-target" variant="h6" sx={{mb: 1}}>Net Wealth Target</Typography>
             <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                The total net worth the model should account for across all brackets. The calculator warns when bracket net worths don&rsquo;t sum to this figure.
+                The total net wealth the model should account for across all brackets. The calculator warns when bracket net worths don&rsquo;t sum to this figure.
             </Typography>
             {selectedNetWorth && (
                 <TableContainer component={Paper} variant="outlined" sx={{mb: 4}}>
@@ -277,15 +277,15 @@ const VariablesPage: React.FC = () => {
                 </Typography>
             </Paper>
 
-            {/* Net Worth Constraint */}
-            <Typography id="net-worth-constraint" variant="h6" sx={{mb: 1}}>Net Worth Constraint</Typography>
+            {/* Net Wealth Constraint */}
+            <Typography id="net-worth-constraint" variant="h6" sx={{mb: 1}}>Net Wealth Constraint</Typography>
             <Paper variant="outlined" sx={{p: 2, mb: 4}}>
                 <Typography variant="body1" sx={{mb: 1, fontFamily: 'monospace'}}>
                     sum(bracketNetWorth) = netWorthTarget
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    The sum of all bracket net worths (assets minus debts, multiplied by bracket population) should equal the selected net worth target.
-                    The calculator displays a warning when net worth is unaccounted for, and an error when bracket totals exceed the target.
+                    The sum of all bracket net worths (assets minus debts, multiplied by bracket population) should equal the selected net wealth target.
+                    The calculator displays a warning when net wealth is unaccounted for, and an error when bracket totals exceed the target.
                 </Typography>
             </Paper>
 
@@ -305,7 +305,7 @@ const VariablesPage: React.FC = () => {
                             <TableCell><code>(sum(assetRate * assetDollars) &minus; sum(debtRate * debtDollars)) * population</code></TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Per-Bracket Net Worth</TableCell>
+                            <TableCell>Per-Bracket Net Wealth</TableCell>
                             <TableCell><code>(sum(assetDollars) &minus; sum(debtDollars)) * population</code></TableCell>
                         </TableRow>
                         <TableRow>
@@ -330,7 +330,7 @@ const VariablesPage: React.FC = () => {
 
             <Paper variant="outlined" sx={{p: 3}}>
             <Typography variant="body2" color="text.secondary" sx={{mb: 3}}>
-                Net Worth = Holdings &minus; Debts. Each category has a ~per-person dollar amount and an independent rate within every bracket.
+                Net Wealth = Holdings &minus; Debts. Each category has a ~per-person dollar amount and an independent rate within every bracket.
                 For holdings the rate is a tax rate; for debts the rate is a deduction percentage.
             </Typography>
 
@@ -408,7 +408,7 @@ const VariablesPage: React.FC = () => {
                                 <TableRow>
                                     <TableCell><strong>Bracket</strong></TableCell>
                                     <TableCell align="right"><strong>Population</strong></TableCell>
-                                    <TableCell align="right"><strong>~Net Worth / Person</strong></TableCell>
+                                    <TableCell align="right"><strong>~Net Wealth / Person</strong></TableCell>
                                     <TableCell align="right"><strong>~Tax / Person</strong></TableCell>
                                     <TableCell align="right"><strong>Bracket Total Tax</strong></TableCell>
                                 </TableRow>

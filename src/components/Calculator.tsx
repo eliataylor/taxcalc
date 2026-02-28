@@ -485,8 +485,8 @@ const Calculator: React.FC = () => {
                                         onChange={e => setSortField(e.target.value as SortField)}
                                     >
                                         <MenuItem value="population">Total Population</MenuItem>
-                                        <MenuItem value="netWorth">Total Net Worth</MenuItem>
-                                        <MenuItem value="netWorthPerPerson">Net Worth per Person</MenuItem>
+                                        <MenuItem value="netWorth">Total Net Wealth</MenuItem>
+                                        <MenuItem value="netWorthPerPerson">Net Wealth per Person</MenuItem>
                                         <MenuItem value="effectiveRate">Effective Rate</MenuItem>
                                         <MenuItem value="totalTax">Total Taxes Due</MenuItem>
                                     </Select>
@@ -537,8 +537,8 @@ const Calculator: React.FC = () => {
                             return (
                                 <Alert severity={'warning'} color={severity} sx={{mb: 2}}>
                                     {netWorthBalance < 0
-                                        ? `Net worth still exceeds target by ${formatMoney(Math.abs(netWorthBalance), {notation: 'compact'})}`
-                                        : `${formatMoney(netWorthBalance, {notation: 'compact'})} in net worth not accounted for in brackets`}
+                                        ? `net wealth still exceeds target by ${formatMoney(Math.abs(netWorthBalance), {notation: 'compact'})}`
+                                        : `${formatMoney(netWorthBalance, {notation: 'compact'})} in net wealth not accounted for in brackets`}
                                 </Alert>
                             );
                         })()}

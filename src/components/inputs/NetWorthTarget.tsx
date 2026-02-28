@@ -78,7 +78,7 @@ const NetWorthTarget: React.FC<NetWorthTargetProps> = ({val, name, description, 
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
             <TextField
-                label="Maximum Net Worth To Tax"
+                label="Maximum Net Wealth To Tax"
                 select
                 id="net-worth-target"
                 value={selectedId}
@@ -105,7 +105,7 @@ const NetWorthTarget: React.FC<NetWorthTargetProps> = ({val, name, description, 
             </TextField>
 
             <Dialog open={modalOpen} onClose={handleCancelCustom} maxWidth="xs" fullWidth>
-                <DialogTitle>Custom Net Worth Target</DialogTitle>
+                <DialogTitle>Custom Net Wealth Target</DialogTitle>
                 <DialogContent sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important'}}>
                     <TextField
                         label="Name"
@@ -113,7 +113,7 @@ const NetWorthTarget: React.FC<NetWorthTargetProps> = ({val, name, description, 
                         onChange={e => setCustomName(e.target.value)}
                         fullWidth
                         size="small"
-                        placeholder="e.g. Household Net Worth Only"
+                        placeholder="e.g. Household Net Wealth Only"
                     />
                     <TextField
                         label="Description"

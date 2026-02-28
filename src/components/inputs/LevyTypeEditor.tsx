@@ -116,8 +116,8 @@ const LevyTypeEditor: React.FC<LevyTypeEditorProps> = ({open, onClose, onSave, e
                 </ToggleButtonGroup>
                 <Typography variant="caption" color="text.secondary" sx={{mt: -1.5}}>
                     {form.category === 'asset'
-                        ? 'Holdings add to taxable net worth — the rate is a tax rate.'
-                        : 'Debts reduce taxable net worth — the rate is a deduction percentage.'}
+                        ? 'Holdings add to taxable net wealth — the rate is a tax rate.'
+                        : 'Debts reduce taxable net wealth — the rate is a deduction percentage.'}
                 </Typography>
 
                 <TextField

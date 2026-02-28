@@ -6,7 +6,7 @@ import {calculateBracketTax, calculateNetWorth} from '../../utils/calculations.t
 import {formatMoney} from '../../utils/formatters.ts';
 
 /**
- * Bar chart showing tax due as percentage of net worth by bracket
+ * Bar chart showing tax due as percentage of net wealth by bracket
  */
 const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, budgetTarget}) => {
 
@@ -39,7 +39,7 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, budg
                         <strong>{data.name}</strong>
                     </Typography>
                     <Typography variant="body2">
-                        Tax as % of Net Worth: {data.percentValue.toFixed(2)}%
+                        Tax as % of Net Wealth: {data.percentValue.toFixed(2)}%
                     </Typography>
                     <Typography variant="body2">
                         Population: {data.population.toLocaleString()}
@@ -82,7 +82,7 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, budg
     return (
         <Box sx={{width: '100%'}}>
             <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{letterSpacing: 0.5}}>
-                Percentage of Net Worth Taxed
+                Percentage of Net Wealth Taxed
             </Typography>
             <ResponsiveContainer width="100%" height={250}>
                 <BarChart
@@ -96,7 +96,7 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, budg
                         tickFormatter={(value) => `${value.toFixed(2)}%`}
                         domain={[0, 100]}
                         tick={{fontSize: 10}}
-                        label={{value: '% of Net Worth', position: 'bottom', offset: 0, style: {fontSize: 10, fill: '#888'}}}
+                        label={{value: '% of Net Wealth', position: 'bottom', offset: 0, style: {fontSize: 10, fill: '#888'}}}
                     />
                     <YAxis
                         type="category"
@@ -107,7 +107,7 @@ const TaxDueOverNetWorth: React.FC<TaxDistributionChartProps> = ({brackets, budg
                     <Tooltip content={<CustomTooltip/>}/>
                     <Bar
                         dataKey="value"
-                        name="Tax as % of Net Worth"
+                        name="Tax as % of Net Wealth"
                         fill="#8884d8"
                         barSize={18}
                     >

@@ -6,7 +6,7 @@ import {calculateNetWorth} from '../../utils/calculations.ts';
 import {formatMoney} from '../../utils/formatters.ts';
 
 /**
- * Bar chart showing total net worth by tax bracket
+ * Bar chart showing total net wealth by tax bracket
  */
 const TotalNetWorthByBracket: React.FC<HoldingsTaxComparisonChartProps> = ({brackets}) => {
 
@@ -37,7 +37,7 @@ const TotalNetWorthByBracket: React.FC<HoldingsTaxComparisonChartProps> = ({brac
                         <strong>{d.name}</strong>
                     </Typography>
                     <Typography variant="body2">
-                        Net Worth: {formatMoney(d.value, {notation: 'standard'})}
+                        Net Wealth: {formatMoney(d.value, {notation: 'standard'})}
                     </Typography>
                     <Typography variant="body2">
                         {pct}% of total
@@ -80,7 +80,7 @@ const TotalNetWorthByBracket: React.FC<HoldingsTaxComparisonChartProps> = ({brac
     return (
         <Box sx={{width: '100%'}}>
             <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{letterSpacing: 0.5}}>
-                Total Net Worth by Bracket
+                Total Net Wealth by Bracket
             </Typography>
             <ResponsiveContainer width="100%" height={250}>
                 <BarChart
@@ -96,7 +96,7 @@ const TotalNetWorthByBracket: React.FC<HoldingsTaxComparisonChartProps> = ({brac
                         }
                         tick={{fontSize: 10}}
                         domain={[0, Math.max(...data.map(d => d.value)) * 1.1]}
-                        label={{value: 'Net Worth', position: 'bottom', offset: 0, style: {fontSize: 10, fill: '#888'}}}
+                        label={{value: 'Net Wealth', position: 'bottom', offset: 0, style: {fontSize: 10, fill: '#888'}}}
                     />
                     <YAxis
                         type="category"
@@ -107,7 +107,7 @@ const TotalNetWorthByBracket: React.FC<HoldingsTaxComparisonChartProps> = ({brac
                     <Tooltip content={<CustomTooltip/>}/>
                     <Bar
                         dataKey="value"
-                        name="Net Worth"
+                        name="Net Wealth"
                         barSize={18}
                     >
                         {data.map((entry, index) => (

@@ -25,7 +25,7 @@ import { AccountBalance, Functions } from '@mui/icons-material';
 const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 
 /**
- * Homepage describing the Net Worth tax calculator project.
+ * Homepage describing the Net Wealth tax calculator project.
  */
 const HomePage: React.FC = () => {
     return (
@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
                 align="center"
                 sx={{ mb: 1, fontWeight: 600 }}
             >
-                Net Worth Tax Lab
+                Net Wealth Tax Lab
             </Typography>
             <Paper
                 elevation={0}
@@ -60,7 +60,7 @@ const HomePage: React.FC = () => {
                     component="p"
                     sx={{ fontStyle: 'italic', textAlign: 'center', mb: 2 }}
                 >
-                    What if taxes were based on <strong>Net Worth</strong> instead of <strong>Annual Income</strong>?
+                    What if taxes were based on <strong>Net Wealth</strong> instead of <strong>Annual Income</strong>?
                 </Typography>
 
                 {/* <Typography variant="body2" color="text.secondary" >
@@ -136,23 +136,23 @@ const HomePage: React.FC = () => {
                 </Stack>
             </Paper>
 
-            {/* --- Defining Net Worth --- */}
+            {/* --- Defining Net Wealth --- */}
             <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Functions fontSize="small" /> Defining Net Worth
+                <Functions fontSize="small" /> Defining Net Wealth
             </Typography>
             <Typography variant="body1" sx={{ mb: 1 }}>
                 The goal of this system is to tax who ever is hording money instead of circulating it. That has to include every corporation and individual &mdash; including minors, who would file through a legal guardian.
-                Our current working definition of Net Worth is:
+                Our current working definition of Net Wealth is:
             </Typography>
 
             <Typography variant="subtitle1" sx={{ textAlign: 'center', fontWeight: 600, mb: 1.5 }}>
-                <em>Net Worth</em> = Liquid Capital + Reserved Capital + Idle Property &minus; Debts & Interests Owed
+                <em>Net Wealth</em> = Liquid Capital + Reserved Capital + Idle Property &minus; Debts & Interests Owed
             </Typography>
 
  
             <Typography variant="subtitle1" sx={{ mb: 2 }}>
                 Disagree? The whole point of this site is to offer tools for you can <RouterLink to="/calculator?view=edit">create your own</RouterLink> rules and tax brackets that balance, any target federal budget, based on any total money supply. 
-                The tool provides warnings when Tax Brackets do not sum to your target Population, Federal Budget, or Total Net Worth.
+                The tool provides warnings when Tax Brackets do not sum to your target Population, Federal Budget, or Total Net Wealth.
             </Typography>
 
             <Button
@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
                 <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
                     <ListItemText
                         primary="Date to File"
-                        secondary="Everyone's Net Worth changes dialy, so when do we file?"
+                        secondary="Everyone's Net Wealth changes dialy, so when do we file?"
                     />
                 </ListItem>
                 <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
@@ -266,7 +266,7 @@ const HomePage: React.FC = () => {
                     <WarningAmberIcon fontSize="small" color="warning" /> The Debt Problem
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                    Debt deductions open a lot of loopholes. However, they're probably necessary when calculating Net Worth.
+                    Debt deductions open a lot of loopholes. However, they're probably necessary when calculating Net Wealth.
                 </Typography>
                 <List dense disablePadding sx={{ mb: 2 }}>
                     <ListItem alignItems="flex-start" sx={{ py: 0.5 }}>
